@@ -1,0 +1,302 @@
+{
+  "contract_version": "1.0",
+  "status": "agreed_for_mvp",
+  "path_rule": "All paths are relative to the project root unless explicitly absolute.",
+  "format_rules": {
+    "json": "UTF-8, valid JSON, two-space indentation when written to disk",
+    "csv": "UTF-8 with a header row; source column names are preserved exactly",
+    "field_order": "Source-field outputs preserve source column order",
+    "target_names": "Unified target fields use snake_case"
+  },
+  "diagnostics_contract": {
+    "path_pattern": "<primary-output-path>.diagnostics.json",
+    "required_fields": [
+      "contract_version",
+      "module",
+      "status",
+      "errors",
+      "warnings"
+    ],
+    "status_values": ["success", "warning", "error"],
+    "error_item": {
+      "required_fields": ["code", "message", "location", "retryable"],
+      "types": {
+        "code": "string",
+        "message": "string",
+        "location": "string or null",
+        "retryable": "boolean"
+      }
+    },
+    "warning_item": {
+      "required_fields": ["code", "message", "location", "suggested_action"],
+      "types": {
+        "code": "string",
+        "message": "string",
+        "location": "string or null",
+        "suggested_action": "string"
+      }
+    },
+    "fatal_behavior": "Do not write or overwrite the primary output. Raise an exception and make the CLI exit non-zero.",
+    "warning_behavior": "Write the primary output and record warnings in the diagnostics sidecar."
+  },
+  "modules": {
+    "FieldAnalyzer": {
+      "implementation": "src/field_analyzer.py",
+      "llm_dependency": {
+        "required": true,
+        "purpose": "Infer business meaning from field names, samples, and profile statistics.",
+        "plain_code_responsibility": "Validate inputs, enforce structured output, preserve field order, and check required fields."
+      },
+      "inputs": [
+        {
+          "name": "csv_file",
+          "path_pattern": "data/examples/week1/<source>_<table>.csv",
+          "format": "CSV",
+          "required_fields": ["header row"],
+          "notes": "The full CSV is profiled locally; it is not sent directly to the LLM."
+        },
+        {
+          "name": "csv_profile",
+          "path_pattern": "outputs/<csv-stem>_profile.json",
+          "format": "JSON",
+          "required_fields": [
+            "file_name",
+            "row_count",
+            "column_count",
+            "duplicate_row_count",
+            "fields"
+          ],
+          "field_item_required_fields": [
+            "field_name",
+            "inferred_type",
+            "sample_values",
+            "null_count",
+            "null_rate",
+            "unique_count",
+            "top_values",
+            "patterns"
+          ]
+        }
+      ],
+      "output": {
+        "path_pattern": "outputs/<csv-stem>-analysis.json",
+        "format": "JSON",
+        "required_fields": ["file_name", "table_type", "table_confidence", "fields"],
+        "field_item_required_fields": [
+          "field_name",
+          "semantic_type",
+          "description",
+          "confidence",
+          "evidence"
+        ]
+      },
+      "error_codes": [
+        "FILE_NOT_FOUND",
+        "INVALID_CSV",
+        "INVALID_PROFILE",
+        "LLM_UNAVAILABLE",
+        "INVALID_LLM_OUTPUT",
+        "FIELD_ORDER_MISMATCH"
+      ],
+      "warning_codes": ["LOW_CONFIDENCE_FIELD", "UNKNOWN_SEMANTIC_TYPE"]
+    },
+    "SchemaRecommender": {
+      "implementation": "src/schema_recommender.py",
+      "llm_dependency": {
+        "required": false,
+        "purpose": "None for MVP; policy decisions are deterministic Python.",
+        "plain_code_responsibility": "Combine analyses, calculate source coverage, apply modeling policy, and validate the schema."
+      },
+      "inputs": [
+        {
+          "name": "field_analyses",
+          "path_patterns": [
+            "outputs/customer-a-field-analysis.json",
+            "outputs/multilingual-field-analysis.json"
+          ],
+          "format": "JSON object keyed by CSV filename",
+          "required_fields_per_file": [
+            "file_name",
+            "table_type",
+            "table_confidence",
+            "fields"
+          ]
+        }
+      ],
+      "output": {
+        "path": "outputs/unified-schema.json",
+        "format": "JSON",
+        "required_fields": ["schema_version", "modeling_decisions", "tables"],
+        "table_required_fields": ["name", "grain", "primary_key", "fields"],
+        "field_item_required_fields": [
+          "name",
+          "type",
+          "nullable",
+          "description",
+          "source_coverage",
+          "rationale"
+        ],
+        "validation_path": "outputs/unified-schema-validation.json"
+      },
+      "error_codes": [
+        "EMPTY_ANALYSIS_INPUT",
+        "INVALID_ANALYSIS",
+        "MISSING_REQUIRED_TABLE",
+        "SCHEMA_VALIDATION_FAILED"
+      ],
+      "warning_codes": ["PARTIAL_SOURCE_COVERAGE", "UNRESOLVED_MODELING_DECISION"]
+    },
+    "MappingGenerator": {
+      "implementation": "planned: src/mapping_generator.py",
+      "llm_dependency": {
+        "required": true,
+        "purpose": "Draft semantic source-to-target mappings and explain non-obvious transformations.",
+        "plain_code_responsibility": "Check field existence, duplicate mappings, types, required targets, confidence thresholds, and transformation syntax."
+      },
+      "inputs": [
+        {
+          "name": "field_analysis",
+          "path_pattern": "outputs/<csv-stem>-analysis.json",
+          "format": "JSON",
+          "required_fields": ["file_name", "table_type", "fields"]
+        },
+        {
+          "name": "unified_schema",
+          "path": "outputs/unified-schema.json",
+          "format": "JSON",
+          "required_fields": ["schema_version", "tables"]
+        }
+      ],
+      "output": {
+        "path_pattern": "outputs/mappings/<source>-<table>-mapping.json",
+        "format": "JSON",
+        "required_fields": [
+          "mapping_version",
+          "source_system",
+          "source_file",
+          "table_type",
+          "target_table",
+          "mappings",
+          "unmapped_source_fields",
+          "unmapped_target_fields"
+        ],
+        "mapping_item_required_fields": [
+          "source_field",
+          "target_field",
+          "transformation",
+          "confidence",
+          "evidence",
+          "status"
+        ],
+        "status_values": ["accepted", "needs_review", "rejected"]
+      },
+      "error_codes": [
+        "INVALID_ANALYSIS",
+        "INVALID_SCHEMA",
+        "SOURCE_FIELD_NOT_FOUND",
+        "TARGET_FIELD_NOT_FOUND",
+        "DUPLICATE_TARGET_MAPPING",
+        "INVALID_MAPPING_OUTPUT"
+      ],
+      "warning_codes": [
+        "LOW_CONFIDENCE_MAPPING",
+        "UNMAPPED_SOURCE_FIELD",
+        "UNMAPPED_TARGET_FIELD",
+        "AMBIGUOUS_TRANSFORMATION"
+      ]
+    },
+    "ETLConfigGenerator": {
+      "implementation": "planned: src/etl_config_generator.py",
+      "llm_dependency": {
+        "required": false,
+        "purpose": "None for MVP; generate configuration from accepted mappings and schema rules.",
+        "plain_code_responsibility": "Translate accepted mappings into executable configuration and reject invalid references."
+      },
+      "inputs": [
+        {
+          "name": "accepted_mapping",
+          "path_pattern": "outputs/mappings/<source>-<table>-mapping.json",
+          "format": "JSON",
+          "required_fields": ["source_system", "source_file", "target_table", "mappings"]
+        },
+        {
+          "name": "unified_schema",
+          "path": "outputs/unified-schema.json",
+          "format": "JSON",
+          "required_fields": ["schema_version", "tables"]
+        }
+      ],
+      "output": {
+        "path_pattern": "outputs/etl-configs/<source>-<table>-etl-config.json",
+        "format": "JSON",
+        "required_fields": [
+          "config_version",
+          "source_system",
+          "source_file",
+          "target_table",
+          "read_options",
+          "field_mappings",
+          "validation_rules",
+          "reject_policy"
+        ],
+        "field_mapping_required_fields": ["source_field", "target_field", "transformation"]
+      },
+      "error_codes": [
+        "INVALID_MAPPING",
+        "INVALID_SCHEMA",
+        "UNACCEPTED_MAPPING",
+        "TYPE_INCOMPATIBILITY",
+        "INVALID_TRANSFORMATION"
+      ],
+      "warning_codes": ["NULLABLE_SOURCE_TO_REQUIRED_TARGET", "CONDITIONAL_RULE_REQUIRED"]
+    },
+    "DataDictionaryGenerator": {
+      "implementation": "planned: src/data_dictionary_generator.py",
+      "llm_dependency": {
+        "required": false,
+        "purpose": "None for MVP; descriptions, rationales, and lineage already exist in structured inputs.",
+        "plain_code_responsibility": "Render consistent JSON and Markdown documentation from schema and accepted mappings."
+      },
+      "inputs": [
+        {
+          "name": "unified_schema",
+          "path": "outputs/unified-schema.json",
+          "format": "JSON",
+          "required_fields": ["schema_version", "tables"]
+        },
+        {
+          "name": "accepted_mappings",
+          "path_pattern": "outputs/mappings/*-mapping.json",
+          "format": "JSON array or set of files",
+          "required_fields_per_file": ["source_system", "target_table", "mappings"]
+        }
+      ],
+      "outputs": [
+        {
+          "path": "outputs/data-dictionary.json",
+          "format": "JSON",
+          "required_fields": ["dictionary_version", "schema_version", "tables"]
+        },
+        {
+          "path": "outputs/data-dictionary.md",
+          "format": "Markdown",
+          "required_sections": ["Unified Customers", "Unified Orders", "Source Lineage", "Known Limitations"]
+        }
+      ],
+      "dictionary_field_required_fields": [
+        "name",
+        "type",
+        "nullable",
+        "description",
+        "source_lineage",
+        "transformation_notes"
+      ],
+      "error_codes": ["INVALID_SCHEMA", "INVALID_MAPPING", "MISSING_REQUIRED_DESCRIPTION"],
+      "warning_codes": ["PARTIAL_LINEAGE", "MISSING_OPTIONAL_MAPPING", "OPEN_ISSUE"]
+    }
+  },
+  "change_control": {
+    "rule": "Any contract change must update contract_version and be recorded in docs/module-contract-change-log.md.",
+    "compatibility": "Additive optional fields are minor changes; renamed or removed required fields are breaking changes."
+  }
+}
