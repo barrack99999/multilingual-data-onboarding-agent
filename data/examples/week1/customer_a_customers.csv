@@ -1,0 +1,5 @@
+cust_id,full_name,email_addr,phone,signup_dt,loyalty_tier
+C5001,Alex Rivera,alex.rivera@example.com,415-555-0101,2024-01-15,gold
+C5002,Morgan Lee,morgan.lee@example.com,2125550102,01/22/2024,silver
+C5003,Taylor Kim,taylor.kim@example.com,N/A,2024/02/03,bronze
+C5004,Jordan Patel,jordan.patel@example.com,+1 305 555 0104,invalid_date,gold

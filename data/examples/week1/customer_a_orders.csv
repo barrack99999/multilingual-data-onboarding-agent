@@ -1,0 +1,5 @@
+order_no,cust_id,order_dt,total_amt,currency,status
+A-95001,C5001,2024-02-01,129.99,USD,paid
+A-95002,C5002,02/05/2024,74.50,USD,shipped
+A-95003,C5003,2024/02/11,0,USD,cancelled
+A-95004,C5004,2024-02-30,210.20,USD,pending

@@ -1,0 +1,5 @@
+id_pelanggan,nama_lengkap,email,no_hp,tgl_daftar,segmen
+ID-8101,Rina Putri,rina.putri@contoh.example,0812-5555-0101,15-01-2024,premium
+ID-8102,Dimas Arif,dimas.arif@contoh.example,+62 812 5555 0102,22/01/2024,regular
+ID-8103,Maya Lestari,maya.lestari@contoh.example,null,03-02-2024,regular
+ID-8104,Arif Nugraha,arif.nugraha@contoh.example,08135550104,2024-02-14,premium

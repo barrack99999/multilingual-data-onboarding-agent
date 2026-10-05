@@ -1,0 +1,5 @@
+no_pesanan,id_pelanggan,tgl_pesanan,total_harga,mata_uang,status_pesanan
+B-35001,ID-8101,01-02-2024,1500000,IDR,dibayar
+B-35002,ID-8102,05/02/2024,750000,IDR,dikirim
+B-35003,ID-8103,11-02-2024,0,IDR,dibatalkan
+B-35004,ID-8104,2024-02-16,2200000,IDR,menunggu
