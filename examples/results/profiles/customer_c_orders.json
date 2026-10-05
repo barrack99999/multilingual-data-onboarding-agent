@@ -1,0 +1,215 @@
+{
+  "file_name": "customer_c_orders.csv",
+  "row_count": 4,
+  "column_count": 6,
+  "duplicate_row_count": 0,
+  "fields": [
+    {
+      "field_name": "Bestellnummer",
+      "inferred_type": "string",
+      "sample_values": [
+        "C-85001",
+        "C-85002",
+        "C-85003",
+        "C-85004"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "C-85001",
+          "count": 1
+        },
+        {
+          "value": "C-85002",
+          "count": 1
+        },
+        {
+          "value": "C-85003",
+          "count": 1
+        },
+        {
+          "value": "C-85004",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Kundennummer",
+      "inferred_type": "string",
+      "sample_values": [
+        "DE-901",
+        "DE-902",
+        "DE-903",
+        "DE-904"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "DE-901",
+          "count": 1
+        },
+        {
+          "value": "DE-902",
+          "count": 1
+        },
+        {
+          "value": "DE-903",
+          "count": 1
+        },
+        {
+          "value": "DE-904",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Bestelldatum",
+      "inferred_type": "date",
+      "sample_values": [
+        "01.02.2024",
+        "05.02.2024",
+        "11.02.2024",
+        "16.02.2024"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "01.02.2024",
+          "count": 1
+        },
+        {
+          "value": "05.02.2024",
+          "count": 1
+        },
+        {
+          "value": "11.02.2024",
+          "count": 1
+        },
+        {
+          "value": "16.02.2024",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": true,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Betrag",
+      "inferred_type": "number",
+      "sample_values": [
+        "129,99",
+        "74,50",
+        "0,00",
+        "210,20"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "129,99",
+          "count": 1
+        },
+        {
+          "value": "74,50",
+          "count": 1
+        },
+        {
+          "value": "0,00",
+          "count": 1
+        },
+        {
+          "value": "210,20",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": true,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Währung",
+      "inferred_type": "string",
+      "sample_values": [
+        "EUR"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 1,
+      "top_values": [
+        {
+          "value": "EUR",
+          "count": 4
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "StatusCode",
+      "inferred_type": "string",
+      "sample_values": [
+        "BEZ",
+        "VERS",
+        "STOR",
+        "OFF"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "BEZ",
+          "count": 1
+        },
+        {
+          "value": "VERS",
+          "count": 1
+        },
+        {
+          "value": "STOR",
+          "count": 1
+        },
+        {
+          "value": "OFF",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": true
+      }
+    }
+  ]
+}

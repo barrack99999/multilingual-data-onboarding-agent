@@ -1,0 +1,215 @@
+{
+  "file_name": "customer_b_customers.csv",
+  "row_count": 4,
+  "column_count": 6,
+  "duplicate_row_count": 0,
+  "fields": [
+    {
+      "field_name": "id_pelanggan",
+      "inferred_type": "string",
+      "sample_values": [
+        "ID-8101",
+        "ID-8102",
+        "ID-8103",
+        "ID-8104"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "ID-8101",
+          "count": 1
+        },
+        {
+          "value": "ID-8102",
+          "count": 1
+        },
+        {
+          "value": "ID-8103",
+          "count": 1
+        },
+        {
+          "value": "ID-8104",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "nama_lengkap",
+      "inferred_type": "string",
+      "sample_values": [
+        "Rina Putri",
+        "Dimas Arif",
+        "Maya Lestari",
+        "Arif Nugraha"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "Rina Putri",
+          "count": 1
+        },
+        {
+          "value": "Dimas Arif",
+          "count": 1
+        },
+        {
+          "value": "Maya Lestari",
+          "count": 1
+        },
+        {
+          "value": "Arif Nugraha",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "email",
+      "inferred_type": "string",
+      "sample_values": [
+        "rina.putri@contoh.example",
+        "dimas.arif@contoh.example",
+        "maya.lestari@contoh.example",
+        "arif.nugraha@contoh.example"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "rina.putri@contoh.example",
+          "count": 1
+        },
+        {
+          "value": "dimas.arif@contoh.example",
+          "count": 1
+        },
+        {
+          "value": "maya.lestari@contoh.example",
+          "count": 1
+        },
+        {
+          "value": "arif.nugraha@contoh.example",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": true,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "no_hp",
+      "inferred_type": "string",
+      "sample_values": [
+        "0812-5555-0101",
+        "+62 812 5555 0102",
+        "08135550104"
+      ],
+      "null_count": 1,
+      "null_rate": 0.25,
+      "unique_count": 3,
+      "top_values": [
+        {
+          "value": "0812-5555-0101",
+          "count": 1
+        },
+        {
+          "value": "+62 812 5555 0102",
+          "count": 1
+        },
+        {
+          "value": "08135550104",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "tgl_daftar",
+      "inferred_type": "date",
+      "sample_values": [
+        "15-01-2024",
+        "22/01/2024",
+        "03-02-2024",
+        "2024-02-14"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "15-01-2024",
+          "count": 1
+        },
+        {
+          "value": "22/01/2024",
+          "count": 1
+        },
+        {
+          "value": "03-02-2024",
+          "count": 1
+        },
+        {
+          "value": "2024-02-14",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": true,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "segmen",
+      "inferred_type": "string",
+      "sample_values": [
+        "premium",
+        "regular"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 2,
+      "top_values": [
+        {
+          "value": "premium",
+          "count": 2
+        },
+        {
+          "value": "regular",
+          "count": 2
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    }
+  ]
+}

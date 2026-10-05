@@ -1,0 +1,215 @@
+{
+  "file_name": "customer_b_orders.csv",
+  "row_count": 4,
+  "column_count": 6,
+  "duplicate_row_count": 0,
+  "fields": [
+    {
+      "field_name": "no_pesanan",
+      "inferred_type": "string",
+      "sample_values": [
+        "B-35001",
+        "B-35002",
+        "B-35003",
+        "B-35004"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "B-35001",
+          "count": 1
+        },
+        {
+          "value": "B-35002",
+          "count": 1
+        },
+        {
+          "value": "B-35003",
+          "count": 1
+        },
+        {
+          "value": "B-35004",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "id_pelanggan",
+      "inferred_type": "string",
+      "sample_values": [
+        "ID-8101",
+        "ID-8102",
+        "ID-8103",
+        "ID-8104"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "ID-8101",
+          "count": 1
+        },
+        {
+          "value": "ID-8102",
+          "count": 1
+        },
+        {
+          "value": "ID-8103",
+          "count": 1
+        },
+        {
+          "value": "ID-8104",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "tgl_pesanan",
+      "inferred_type": "date",
+      "sample_values": [
+        "01-02-2024",
+        "05/02/2024",
+        "11-02-2024",
+        "2024-02-16"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "01-02-2024",
+          "count": 1
+        },
+        {
+          "value": "05/02/2024",
+          "count": 1
+        },
+        {
+          "value": "11-02-2024",
+          "count": 1
+        },
+        {
+          "value": "2024-02-16",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": true,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "total_harga",
+      "inferred_type": "integer",
+      "sample_values": [
+        "1500000",
+        "750000",
+        "0",
+        "2200000"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "1500000",
+          "count": 1
+        },
+        {
+          "value": "750000",
+          "count": 1
+        },
+        {
+          "value": "0",
+          "count": 1
+        },
+        {
+          "value": "2200000",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": true,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "mata_uang",
+      "inferred_type": "string",
+      "sample_values": [
+        "IDR"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 1,
+      "top_values": [
+        {
+          "value": "IDR",
+          "count": 4
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "status_pesanan",
+      "inferred_type": "string",
+      "sample_values": [
+        "dibayar",
+        "dikirim",
+        "dibatalkan",
+        "menunggu"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "dibayar",
+          "count": 1
+        },
+        {
+          "value": "dikirim",
+          "count": 1
+        },
+        {
+          "value": "dibatalkan",
+          "count": 1
+        },
+        {
+          "value": "menunggu",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": true
+      }
+    }
+  ]
+}

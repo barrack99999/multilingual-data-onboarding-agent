@@ -1,0 +1,220 @@
+{
+  "file_name": "customer_a_customers.csv",
+  "row_count": 4,
+  "column_count": 6,
+  "duplicate_row_count": 0,
+  "fields": [
+    {
+      "field_name": "cust_id",
+      "inferred_type": "string",
+      "sample_values": [
+        "C5001",
+        "C5002",
+        "C5003",
+        "C5004"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "C5001",
+          "count": 1
+        },
+        {
+          "value": "C5002",
+          "count": 1
+        },
+        {
+          "value": "C5003",
+          "count": 1
+        },
+        {
+          "value": "C5004",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "full_name",
+      "inferred_type": "string",
+      "sample_values": [
+        "Alex Rivera",
+        "Morgan Lee",
+        "Taylor Kim",
+        "Jordan Patel"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "Alex Rivera",
+          "count": 1
+        },
+        {
+          "value": "Morgan Lee",
+          "count": 1
+        },
+        {
+          "value": "Taylor Kim",
+          "count": 1
+        },
+        {
+          "value": "Jordan Patel",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "email_addr",
+      "inferred_type": "string",
+      "sample_values": [
+        "alex.rivera@example.com",
+        "morgan.lee@example.com",
+        "taylor.kim@example.com",
+        "jordan.patel@example.com"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "alex.rivera@example.com",
+          "count": 1
+        },
+        {
+          "value": "morgan.lee@example.com",
+          "count": 1
+        },
+        {
+          "value": "taylor.kim@example.com",
+          "count": 1
+        },
+        {
+          "value": "jordan.patel@example.com",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": true,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "phone",
+      "inferred_type": "string",
+      "sample_values": [
+        "415-555-0101",
+        "2125550102",
+        "+1 305 555 0104"
+      ],
+      "null_count": 1,
+      "null_rate": 0.25,
+      "unique_count": 3,
+      "top_values": [
+        {
+          "value": "415-555-0101",
+          "count": 1
+        },
+        {
+          "value": "2125550102",
+          "count": 1
+        },
+        {
+          "value": "+1 305 555 0104",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "signup_dt",
+      "inferred_type": "date",
+      "sample_values": [
+        "2024-01-15",
+        "01/22/2024",
+        "2024/02/03",
+        "invalid_date"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "2024-01-15",
+          "count": 1
+        },
+        {
+          "value": "01/22/2024",
+          "count": 1
+        },
+        {
+          "value": "2024/02/03",
+          "count": 1
+        },
+        {
+          "value": "invalid_date",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": true,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "loyalty_tier",
+      "inferred_type": "string",
+      "sample_values": [
+        "gold",
+        "silver",
+        "bronze"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 3,
+      "top_values": [
+        {
+          "value": "gold",
+          "count": 2
+        },
+        {
+          "value": "silver",
+          "count": 1
+        },
+        {
+          "value": "bronze",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    }
+  ]
+}

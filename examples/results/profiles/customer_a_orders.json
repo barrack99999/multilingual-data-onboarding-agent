@@ -1,0 +1,215 @@
+{
+  "file_name": "customer_a_orders.csv",
+  "row_count": 4,
+  "column_count": 6,
+  "duplicate_row_count": 0,
+  "fields": [
+    {
+      "field_name": "order_no",
+      "inferred_type": "string",
+      "sample_values": [
+        "A-95001",
+        "A-95002",
+        "A-95003",
+        "A-95004"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "A-95001",
+          "count": 1
+        },
+        {
+          "value": "A-95002",
+          "count": 1
+        },
+        {
+          "value": "A-95003",
+          "count": 1
+        },
+        {
+          "value": "A-95004",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "cust_id",
+      "inferred_type": "string",
+      "sample_values": [
+        "C5001",
+        "C5002",
+        "C5003",
+        "C5004"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "C5001",
+          "count": 1
+        },
+        {
+          "value": "C5002",
+          "count": 1
+        },
+        {
+          "value": "C5003",
+          "count": 1
+        },
+        {
+          "value": "C5004",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "order_dt",
+      "inferred_type": "date",
+      "sample_values": [
+        "2024-02-01",
+        "02/05/2024",
+        "2024/02/11",
+        "2024-02-30"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "2024-02-01",
+          "count": 1
+        },
+        {
+          "value": "02/05/2024",
+          "count": 1
+        },
+        {
+          "value": "2024/02/11",
+          "count": 1
+        },
+        {
+          "value": "2024-02-30",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": true,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "total_amt",
+      "inferred_type": "number",
+      "sample_values": [
+        "129.99",
+        "74.50",
+        "0",
+        "210.20"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "129.99",
+          "count": 1
+        },
+        {
+          "value": "74.50",
+          "count": 1
+        },
+        {
+          "value": "0",
+          "count": 1
+        },
+        {
+          "value": "210.20",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": true,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "currency",
+      "inferred_type": "string",
+      "sample_values": [
+        "USD"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 1,
+      "top_values": [
+        {
+          "value": "USD",
+          "count": 4
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "status",
+      "inferred_type": "string",
+      "sample_values": [
+        "paid",
+        "shipped",
+        "cancelled",
+        "pending"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "paid",
+          "count": 1
+        },
+        {
+          "value": "shipped",
+          "count": 1
+        },
+        {
+          "value": "cancelled",
+          "count": 1
+        },
+        {
+          "value": "pending",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": true
+      }
+    }
+  ]
+}

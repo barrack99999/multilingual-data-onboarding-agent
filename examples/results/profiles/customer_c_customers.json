@@ -1,0 +1,220 @@
+{
+  "file_name": "customer_c_customers.csv",
+  "row_count": 4,
+  "column_count": 6,
+  "duplicate_row_count": 0,
+  "fields": [
+    {
+      "field_name": "Kundennummer",
+      "inferred_type": "string",
+      "sample_values": [
+        "DE-901",
+        "DE-902",
+        "DE-903",
+        "DE-904"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "DE-901",
+          "count": 1
+        },
+        {
+          "value": "DE-902",
+          "count": 1
+        },
+        {
+          "value": "DE-903",
+          "count": 1
+        },
+        {
+          "value": "DE-904",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Name1",
+      "inferred_type": "string",
+      "sample_values": [
+        "Erika Beispiel",
+        "Lukas Muster",
+        "Mia Beispiel",
+        "Leon Muster"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "Erika Beispiel",
+          "count": 1
+        },
+        {
+          "value": "Lukas Muster",
+          "count": 1
+        },
+        {
+          "value": "Mia Beispiel",
+          "count": 1
+        },
+        {
+          "value": "Leon Muster",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "EMail",
+      "inferred_type": "string",
+      "sample_values": [
+        "erika@beispiel.example",
+        "lukas@beispiel.example",
+        "mia@beispiel.example",
+        "leon@beispiel.example"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "erika@beispiel.example",
+          "count": 1
+        },
+        {
+          "value": "lukas@beispiel.example",
+          "count": 1
+        },
+        {
+          "value": "mia@beispiel.example",
+          "count": 1
+        },
+        {
+          "value": "leon@beispiel.example",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": true,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Telefon",
+      "inferred_type": "string",
+      "sample_values": [
+        "+49 30 5550101",
+        "030-555-0102",
+        "+49 89 5550104"
+      ],
+      "null_count": 1,
+      "null_rate": 0.25,
+      "unique_count": 3,
+      "top_values": [
+        {
+          "value": "+49 30 5550101",
+          "count": 1
+        },
+        {
+          "value": "030-555-0102",
+          "count": 1
+        },
+        {
+          "value": "+49 89 5550104",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Erfassungsdatum",
+      "inferred_type": "date",
+      "sample_values": [
+        "15.01.2024",
+        "22.01.2024",
+        "03.02.2024",
+        "14.02.2024"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4,
+      "top_values": [
+        {
+          "value": "15.01.2024",
+          "count": 1
+        },
+        {
+          "value": "22.01.2024",
+          "count": 1
+        },
+        {
+          "value": "03.02.2024",
+          "count": 1
+        },
+        {
+          "value": "14.02.2024",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": true,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    },
+    {
+      "field_name": "Kundengruppe",
+      "inferred_type": "string",
+      "sample_values": [
+        "A",
+        "B",
+        "C"
+      ],
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 3,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 2
+        },
+        {
+          "value": "B",
+          "count": 1
+        },
+        {
+          "value": "C",
+          "count": 1
+        }
+      ],
+      "patterns": {
+        "looks_like_date": false,
+        "looks_like_email": false,
+        "looks_like_amount": false,
+        "looks_like_status": false
+      }
+    }
+  ]
+}
