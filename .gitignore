@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime outputs
+outputs/*
+!outputs/.gitkeep
+
+# Local/generated stress-test data
+data/generated/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
