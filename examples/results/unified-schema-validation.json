@@ -1,0 +1,65 @@
+{
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "check": "separate_customer_and_order_tables",
+      "passed": true,
+      "detail": "Recommendation must contain exactly unified_customers and unified_orders."
+    },
+    {
+      "check": "required_customer_fields",
+      "passed": true,
+      "detail": "Missing: []"
+    },
+    {
+      "check": "required_order_fields",
+      "passed": true,
+      "detail": "Missing: []"
+    },
+    {
+      "check": "keep_full_name_unsplit",
+      "passed": true,
+      "detail": "MVP keeps culturally flexible full_name without unreliable splitting."
+    },
+    {
+      "check": "no_customer_attributes_in_orders",
+      "passed": true,
+      "detail": "Customer descriptive attributes must remain in unified_customers."
+    },
+    {
+      "check": "phone_nullable",
+      "passed": true,
+      "detail": "Phone must be nullable because sources contain missing numbers."
+    },
+    {
+      "check": "order_customer_link_settings",
+      "passed": true,
+      "detail": "The source customer ID is required; the resolved unified link may be unavailable during matching."
+    },
+    {
+      "check": "source_system_required",
+      "passed": true,
+      "detail": "source_system must be required in both tables."
+    },
+    {
+      "check": "amount_usd_calculated_and_nullable",
+      "passed": true,
+      "detail": "amount_usd must be a nullable calculated field."
+    },
+    {
+      "check": "controlled_status_enum",
+      "passed": true,
+      "detail": "Canonical enum and raw source status must both be retained."
+    },
+    {
+      "check": "field_metadata_complete",
+      "passed": true,
+      "detail": "Every field needs type, nullability, description, coverage, and rationale."
+    },
+    {
+      "check": "core_source_coverage_complete",
+      "passed": true,
+      "detail": "Core concepts must have direct coverage from Customers A, B, and C."
+    }
+  ]
+}

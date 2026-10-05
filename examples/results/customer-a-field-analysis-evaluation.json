@@ -1,0 +1,105 @@
+{
+  "reference": "data/examples/week1 fictional public Customer A CSV files",
+  "scoring_method": "Exact semantic-type match for all 12 Customer A fields",
+  "correct_fields": 12,
+  "total_fields": 12,
+  "accuracy": 1.0,
+  "comparisons": [
+    {
+      "file_name": "customer_a_customers.csv",
+      "field_name": "cust_id",
+      "expected_semantic_type": "customer_id",
+      "actual_semantic_type": "customer_id",
+      "confidence": 0.95,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_customers.csv",
+      "field_name": "full_name",
+      "expected_semantic_type": "full_name",
+      "actual_semantic_type": "full_name",
+      "confidence": 0.98,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_customers.csv",
+      "field_name": "email_addr",
+      "expected_semantic_type": "email",
+      "actual_semantic_type": "email",
+      "confidence": 0.99,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_customers.csv",
+      "field_name": "phone",
+      "expected_semantic_type": "phone",
+      "actual_semantic_type": "phone",
+      "confidence": 0.9,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_customers.csv",
+      "field_name": "signup_dt",
+      "expected_semantic_type": "signup_date",
+      "actual_semantic_type": "signup_date",
+      "confidence": 0.85,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_customers.csv",
+      "field_name": "loyalty_tier",
+      "expected_semantic_type": "loyalty_tier",
+      "actual_semantic_type": "loyalty_tier",
+      "confidence": 0.95,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_orders.csv",
+      "field_name": "order_no",
+      "expected_semantic_type": "order_id",
+      "actual_semantic_type": "order_id",
+      "confidence": 0.95,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_orders.csv",
+      "field_name": "cust_id",
+      "expected_semantic_type": "customer_id",
+      "actual_semantic_type": "customer_id",
+      "confidence": 0.95,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_orders.csv",
+      "field_name": "order_dt",
+      "expected_semantic_type": "order_date",
+      "actual_semantic_type": "order_date",
+      "confidence": 0.9,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_orders.csv",
+      "field_name": "total_amt",
+      "expected_semantic_type": "amount",
+      "actual_semantic_type": "amount",
+      "confidence": 0.95,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_orders.csv",
+      "field_name": "currency",
+      "expected_semantic_type": "currency",
+      "actual_semantic_type": "currency",
+      "confidence": 0.9,
+      "correct": true
+    },
+    {
+      "file_name": "customer_a_orders.csv",
+      "field_name": "status",
+      "expected_semantic_type": "order_status",
+      "actual_semantic_type": "order_status",
+      "confidence": 0.95,
+      "correct": true
+    }
+  ]
+}

@@ -1,0 +1,426 @@
+{
+  "customer_b_customers.csv": {
+    "file_name": "customer_b_customers.csv",
+    "table_type": "customer",
+    "table_confidence": 0.95,
+    "fields": [
+      {
+        "field_name": "id_pelanggan",
+        "semantic_type": "customer_id",
+        "description": "Unique identifier for each customer, indicated by the field name 'id_pelanggan' (Indonesian for customer ID) and sample values like 'ID-8101'. All values are unique and non-null.",
+        "confidence": 0.98,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'id_pelanggan' suggests customer identifier in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'ID-8101', 'ID-8102' are unique customer IDs."
+          }
+        ]
+      },
+      {
+        "field_name": "nama_lengkap",
+        "semantic_type": "full_name",
+        "description": "Full name of the customer, supported by the Indonesian field name 'nama_lengkap' and sample values such as 'Rina Putri' and 'Dimas Arif'. All values are unique and non-null.",
+        "confidence": 0.99,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'nama_lengkap' means full name in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'Rina Putri', 'Dimas Arif' are typical full names."
+          }
+        ]
+      },
+      {
+        "field_name": "email",
+        "semantic_type": "email",
+        "description": "Email address of the customer, confirmed by the field name 'email' and sample values that match email patterns like 'rina.putri@contoh.example'. All values are unique and non-null.",
+        "confidence": 1.0,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'email' clearly indicates email addresses."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'rina.putri@contoh.example' match email format."
+          }
+        ]
+      },
+      {
+        "field_name": "no_hp",
+        "semantic_type": "phone",
+        "description": "Customer phone number, indicated by the Indonesian abbreviation 'no_hp' (nomor handphone) and sample values such as '0812-5555-0101' and '+62 812 5555 0102'. One null value present.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'no_hp' is common Indonesian abbreviation for mobile phone number."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like '0812-5555-0101', '+62 812 5555 0102' are phone number formats."
+          }
+        ]
+      },
+      {
+        "field_name": "tgl_daftar",
+        "semantic_type": "signup_date",
+        "description": "Date when the customer registered or signed up, supported by the Indonesian 'tgl_daftar' (tanggal daftar) and date-typed sample values like '15-01-2024' and '2024-02-14'. All values non-null and unique.",
+        "confidence": 0.98,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'tgl_daftar' means registration date in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like '15-01-2024', '2024-02-14' are dates indicating signup."
+          }
+        ]
+      },
+      {
+        "field_name": "segmen",
+        "semantic_type": "customer_segment",
+        "description": "Customer segment classification, indicated by the Indonesian word 'segmen' and sample values 'premium' and 'regular'. All values non-null.",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'segmen' suggests customer segment."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values 'premium' and 'regular' indicate customer segments."
+          }
+        ]
+      }
+    ]
+  },
+  "customer_b_orders.csv": {
+    "file_name": "customer_b_orders.csv",
+    "table_type": "order",
+    "table_confidence": 0.95,
+    "fields": [
+      {
+        "field_name": "no_pesanan",
+        "semantic_type": "order_id",
+        "description": "Order identifier with prefix 'B-' and numeric suffix, unique per row, indicating order number.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'no_pesanan' suggests 'order number' in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'B-35001', 'B-35002' look like order IDs with a prefix and numeric sequence."
+          }
+        ]
+      },
+      {
+        "field_name": "id_pelanggan",
+        "semantic_type": "customer_id",
+        "description": "Customer identifier with prefix 'ID-' and numeric suffix, unique per row, indicating customer ID.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'id_pelanggan' means 'customer ID' in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'ID-8101', 'ID-8102' look like customer IDs with a prefix and numeric sequence."
+          }
+        ]
+      },
+      {
+        "field_name": "tgl_pesanan",
+        "semantic_type": "order_date",
+        "description": "Date of the order in various date formats, indicating when the order was placed.",
+        "confidence": 0.98,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'tgl_pesanan' means 'order date' in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values include '01-02-2024', '05/02/2024', '2024-02-16', all valid dates."
+          },
+          {
+            "source": "profile_statistics",
+            "detail": "Field inferred as date type with 0% nulls and unique values."
+          }
+        ]
+      },
+      {
+        "field_name": "total_harga",
+        "semantic_type": "amount",
+        "description": "Total price or amount of the order in integer currency units, including zero values.",
+        "confidence": 0.97,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'total_harga' means 'total price' in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like '1500000', '750000', '0', '2200000' are numeric amounts."
+          },
+          {
+            "source": "profile_statistics",
+            "detail": "Field inferred as integer with pattern indicating amount."
+          }
+        ]
+      },
+      {
+        "field_name": "mata_uang",
+        "semantic_type": "currency",
+        "description": "Currency code for the order amounts, here consistently 'IDR' indicating Indonesian Rupiah.",
+        "confidence": 0.99,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'mata_uang' means 'currency' in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "All sample values are 'IDR', the ISO code for Indonesian Rupiah."
+          }
+        ]
+      },
+      {
+        "field_name": "status_pesanan",
+        "semantic_type": "order_status",
+        "description": "Status of the order with Indonesian terms for paid, shipped, canceled, and pending.",
+        "confidence": 0.98,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'status_pesanan' means 'order status' in Indonesian."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values 'dibayar' (paid), 'dikirim' (shipped), 'dibatalkan' (canceled), 'menunggu' (waiting) indicate order status."
+          },
+          {
+            "source": "profile_statistics",
+            "detail": "Field pattern flagged as status type."
+          }
+        ]
+      }
+    ]
+  },
+  "customer_c_customers.csv": {
+    "file_name": "customer_c_customers.csv",
+    "table_type": "customer",
+    "table_confidence": 0.95,
+    "fields": [
+      {
+        "field_name": "Kundennummer",
+        "semantic_type": "customer_id",
+        "description": "Unique identifier for customers, indicated by the German term 'Kundennummer' and unique string values like 'DE-901'.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'Kundennummer' is German for 'customer number'."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'DE-901', 'DE-902' are unique identifiers for customers."
+          }
+        ]
+      },
+      {
+        "field_name": "Name1",
+        "semantic_type": "full_name",
+        "description": "Full name of the customer, supported by sample values that look like personal names.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'Name1' suggests a person's name."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values such as 'Erika Beispiel', 'Lukas Muster' are typical full names."
+          }
+        ]
+      },
+      {
+        "field_name": "EMail",
+        "semantic_type": "email",
+        "description": "Email address of the customer, confirmed by the field name and values matching email patterns.",
+        "confidence": 1.0,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'EMail' clearly indicates email addresses."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Values like 'erika@beispiel.example' match email format."
+          }
+        ]
+      },
+      {
+        "field_name": "Telefon",
+        "semantic_type": "phone",
+        "description": "Phone number of the customer, indicated by the German word 'Telefon' and sample values formatted as phone numbers.",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'Telefon' is German for 'phone'."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Values like '+49 30 5550101', '030-555-0102' are phone number formats."
+          }
+        ]
+      },
+      {
+        "field_name": "Erfassungsdatum",
+        "semantic_type": "signup_date",
+        "description": "Date when the customer was registered or recorded, suggested by the German term 'Erfassungsdatum' and date-typed sample values.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'Erfassungsdatum' means 'recording date' or 'registration date'."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Values like '15.01.2024', '22.01.2024' are dates."
+          }
+        ]
+      },
+      {
+        "field_name": "Kundengruppe",
+        "semantic_type": "customer_segment",
+        "description": "Customer segment or group classification, indicated by the German term 'Kundengruppe' and categorical values like 'A', 'B', 'C'.",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'Kundengruppe' means 'customer group'."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Values 'A', 'B', 'C' suggest categorical customer segments."
+          }
+        ]
+      }
+    ]
+  },
+  "customer_c_orders.csv": {
+    "file_name": "customer_c_orders.csv",
+    "table_type": "order",
+    "table_confidence": 0.95,
+    "fields": [
+      {
+        "field_name": "Bestellnummer",
+        "semantic_type": "order_id",
+        "description": "Field name 'Bestellnummer' is German for 'order number'. Sample values like 'C-85001' are unique identifiers for orders, not resembling dates or amounts.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "'Bestellnummer' translates to 'order number' in German, indicating an order identifier."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values 'C-85001', 'C-85002', 'C-85003', 'C-85004' are unique strings likely representing order IDs."
+          }
+        ]
+      },
+      {
+        "field_name": "Kundennummer",
+        "semantic_type": "customer_id",
+        "description": "Field name 'Kundennummer' is German for 'customer number'. Sample values like 'DE-901' are unique customer identifiers.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "'Kundennummer' means 'customer number' in German, indicating a customer identifier."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values 'DE-901', 'DE-902', 'DE-903', 'DE-904' are unique strings likely representing customer IDs."
+          }
+        ]
+      },
+      {
+        "field_name": "Bestelldatum",
+        "semantic_type": "order_date",
+        "description": "Field name 'Bestelldatum' is German for 'order date'. Sample values are dates in DD.MM.YYYY format, matching inferred date type.",
+        "confidence": 1.0,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "'Bestelldatum' translates to 'order date' in German."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values '01.02.2024', '05.02.2024', '11.02.2024', '16.02.2024' are dates in DD.MM.YYYY format."
+          }
+        ]
+      },
+      {
+        "field_name": "Betrag",
+        "semantic_type": "amount",
+        "description": "Field name 'Betrag' is German for 'amount'. Sample values like '129,99' and '74,50' are numeric amounts with comma decimal separators, matching amount pattern.",
+        "confidence": 1.0,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "'Betrag' means 'amount' in German, indicating monetary values."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values '129,99', '74,50', '0,00', '210,20' are numeric amounts with comma as decimal separator."
+          }
+        ]
+      },
+      {
+        "field_name": "Währung",
+        "semantic_type": "currency",
+        "description": "Field name 'Währung' is German for 'currency'. All sample values are 'EUR', indicating Euro currency.",
+        "confidence": 1.0,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "'Währung' translates to 'currency' in German."
+          },
+          {
+            "source": "sample_values",
+            "detail": "All sample values are 'EUR', the ISO code for Euro currency."
+          }
+        ]
+      },
+      {
+        "field_name": "StatusCode",
+        "semantic_type": "order_status",
+        "description": "Field name 'StatusCode' suggests a status code. Sample values 'BEZ', 'VERS', 'STOR', 'OFF' are distinct codes likely representing order statuses. Pattern matches status type.",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "'StatusCode' indicates a status code, likely for orders."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values 'BEZ', 'VERS', 'STOR', 'OFF' are distinct codes consistent with order status abbreviations."
+          }
+        ]
+      }
+    ]
+  }
+}
