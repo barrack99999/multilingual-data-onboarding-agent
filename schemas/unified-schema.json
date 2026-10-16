@@ -1,0 +1,403 @@
+{
+  "schema_version": "1.1",
+  "modeling_decisions": {
+    "table_separation": {
+      "decision": "Use separate unified_customers and unified_orders tables.",
+      "rationale": "A customer can have many orders, so separate tables avoid repeating customer attributes on every order."
+    },
+    "name_strategy": {
+      "decision": "Keep full_name; do not split first_name and last_name in the MVP.",
+      "rationale": "Name structures differ across languages and cultures, and the sources do not provide reliable components."
+    },
+    "amount_strategy": {
+      "decision": "Keep amount_original and currency_code, and calculate nullable amount_usd.",
+      "rationale": "The original value remains auditable while a common USD amount enables comparison when a dated exchange rate exists."
+    },
+    "status_strategy": {
+      "decision": "Keep status_raw and map it to a controlled order_status enum.",
+      "rationale": "Canonical values support analytics, while the raw value preserves evidence for review and remapping."
+    }
+  },
+  "tables": [
+    {
+      "name": "unified_customers",
+      "grain": "One row per customer within a source system.",
+      "primary_key": "unified_customer_id",
+      "fields": [
+        {
+          "name": "unified_customer_id",
+          "type": "string",
+          "nullable": false,
+          "description": "Generated identifier for a customer in the unified model.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Generated during onboarding for every customer source."
+          },
+          "rationale": "A generated key avoids collisions when different systems reuse the same customer ID."
+        },
+        {
+          "name": "source_system",
+          "type": "string",
+          "nullable": false,
+          "description": "System or customer dataset from which the record originated.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Assigned during ingestion for Customers A, B, and C."
+          },
+          "rationale": "Required for provenance and to make source identifiers unambiguous."
+        },
+        {
+          "name": "source_customer_id",
+          "type": "string",
+          "nullable": false,
+          "description": "Customer identifier exactly as represented by the source.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: cust_id",
+              "Customer B: id_pelanggan",
+              "Customer C: Kundennummer"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Preserves the source key for traceability and joins back to source data."
+        },
+        {
+          "name": "full_name",
+          "type": "string",
+          "nullable": true,
+          "description": "Customer's complete name in the source-provided form.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: full_name",
+              "Customer B: nama_lengkap",
+              "Customer C: Name1"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Kept as one field because reliably splitting names is difficult across cultures and languages."
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "nullable": true,
+          "description": "Customer email address.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: email_addr",
+              "Customer B: email",
+              "Customer C: EMail"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Nullable because source records may omit an email or contain an unusable value."
+        },
+        {
+          "name": "phone",
+          "type": "string",
+          "nullable": true,
+          "description": "Customer phone number, retaining the cleaned international representation when available.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: phone",
+              "Customer B: no_hp",
+              "Customer C: Telefon"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Nullable because phone values are missing in some source records and formats vary."
+        },
+        {
+          "name": "signup_date",
+          "type": "date",
+          "nullable": true,
+          "description": "Date on which the customer registered with the source system.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: signup_dt",
+              "Customer B: tgl_daftar",
+              "Customer C: Erfassungsdatum"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Nullable because the original examples contain an invalid signup date that cannot be converted safely."
+        },
+        {
+          "name": "customer_segment",
+          "type": "string",
+          "nullable": true,
+          "description": "Source-defined customer segment or group.",
+          "source_coverage": {
+            "sources": [
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer B: segmen",
+              "Customer C: Kundengruppe"
+            ],
+            "coverage_note": "Directly supplied by Customer B, Customer C."
+          },
+          "rationale": "Nullable because this concept is not supplied by every customer source."
+        },
+        {
+          "name": "loyalty_tier",
+          "type": "string",
+          "nullable": true,
+          "description": "Customer loyalty-program tier.",
+          "source_coverage": {
+            "sources": [
+              "Customer A"
+            ],
+            "source_fields": [
+              "Customer A: loyalty_tier"
+            ],
+            "coverage_note": "Directly supplied by Customer A."
+          },
+          "rationale": "Nullable because only sources with a loyalty program provide it."
+        }
+      ]
+    },
+    {
+      "name": "unified_orders",
+      "grain": "One row per order within a source system.",
+      "primary_key": "unified_order_id",
+      "fields": [
+        {
+          "name": "unified_order_id",
+          "type": "string",
+          "nullable": false,
+          "description": "Generated identifier for an order in the unified model.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Generated during onboarding for every order source."
+          },
+          "rationale": "A generated key prevents collisions between source order identifiers."
+        },
+        {
+          "name": "source_system",
+          "type": "string",
+          "nullable": false,
+          "description": "System or customer dataset from which the order originated.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Assigned during ingestion for Customers A, B, and C."
+          },
+          "rationale": "Required for provenance and to make source identifiers unambiguous."
+        },
+        {
+          "name": "source_order_id",
+          "type": "string",
+          "nullable": false,
+          "description": "Order identifier exactly as represented by the source.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: order_no",
+              "Customer B: no_pesanan",
+              "Customer C: Bestellnummer"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Preserves the source key for reconciliation and traceability."
+        },
+        {
+          "name": "unified_customer_id",
+          "type": "string",
+          "nullable": true,
+          "description": "Resolved link to the matching row in unified_customers.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Derived by matching source_system and source_customer_id to unified_customers."
+          },
+          "rationale": "Nullable until source_system and source_customer_id successfully resolve to a unified customer."
+        },
+        {
+          "name": "source_customer_id",
+          "type": "string",
+          "nullable": false,
+          "description": "Source customer identifier associated with the order.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: cust_id",
+              "Customer B: id_pelanggan",
+              "Customer C: Kundennummer"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Required because every order in the original examples supplies this relationship key."
+        },
+        {
+          "name": "order_date",
+          "type": "date",
+          "nullable": true,
+          "description": "Date on which the order was placed.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: order_dt",
+              "Customer B: tgl_pesanan",
+              "Customer C: Bestelldatum"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Nullable because invalid or missing source dates cannot always be converted safely."
+        },
+        {
+          "name": "amount_original",
+          "type": "decimal(18,2)",
+          "nullable": true,
+          "description": "Order amount in its original transaction currency.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: total_amt",
+              "Customer B: total_harga",
+              "Customer C: Betrag"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Preserves the authoritative source amount; nullable when a value is missing or invalid."
+        },
+        {
+          "name": "currency_code",
+          "type": "string(3)",
+          "nullable": true,
+          "description": "ISO-style currency code for amount_original.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: currency",
+              "Customer B: mata_uang",
+              "Customer C: Währung"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Conditionally required whenever amount_original is present; nullable only when the amount is absent or unusable."
+        },
+        {
+          "name": "amount_usd",
+          "type": "decimal(18,2)",
+          "nullable": true,
+          "description": "Order amount converted to US dollars.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Calculated from amount_original, currency_code, order_date, and an exchange-rate source."
+          },
+          "rationale": "A calculated field supports comparison, but remains nullable until a dated exchange rate is available."
+        },
+        {
+          "name": "status_raw",
+          "type": "string",
+          "nullable": true,
+          "description": "Unchanged order status supplied by the source.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [
+              "Customer A: status",
+              "Customer B: status_pesanan",
+              "Customer C: StatusCode"
+            ],
+            "coverage_note": "Directly supplied by Customer A, Customer B, Customer C."
+          },
+          "rationale": "Preserves the original value for auditing and future mapping corrections."
+        },
+        {
+          "name": "order_status",
+          "type": "enum(pending, paid, shipped, cancelled, unknown)",
+          "nullable": false,
+          "description": "Normalized order status used consistently across all sources.",
+          "source_coverage": {
+            "sources": [
+              "Customer A",
+              "Customer B",
+              "Customer C"
+            ],
+            "source_fields": [],
+            "coverage_note": "Derived from each source's raw order-status field."
+          },
+          "rationale": "A controlled enum supports reliable reporting; unknown safely captures unmapped values."
+        }
+      ]
+    }
+  ]
+}

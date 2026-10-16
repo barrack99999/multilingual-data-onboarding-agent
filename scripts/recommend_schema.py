@@ -48,7 +48,8 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    print("Schema recommendation validation: PASS")
+    status = "PASS" if all(check["passed"] for check in checks) else "REVIEW REQUIRED"
+    print(f"Schema recommendation validation: {status}")
     print(f"- Tables: {', '.join(table['name'] for table in result['tables'])}")
     print(f"- Checks passed: {sum(check['passed'] for check in checks)}/{len(checks)}")
     print(f"Saved schema to {schema_path}")

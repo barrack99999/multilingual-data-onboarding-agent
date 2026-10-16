@@ -1,0 +1,156 @@
+mapping_version: '1.0'
+source_system: Customer A
+source_file: data/examples/week1/customer_a_customers.csv
+table_type: customer
+target_table: unified_customers
+rules:
+- target_field: source_customer_id
+  source_fields:
+  - cust_id
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    cust_id: C1001
+  example_output: C1001
+  notes: Direct rename from cust_id to source_customer_id preserving the source customer ID.
+  confidence: 0.95
+  evidence:
+  - Field name 'cust_id' suggests customer identifier.
+  - Sample values like 'C1001' are unique customer IDs.
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: full_name
+  source_fields:
+  - full_name
+  transformation_type: direct
+  expression:
+    operation: copy
+  example_input:
+    full_name: Emma Johnson
+  example_output: Emma Johnson
+  notes: Direct mapping from full_name to full_name as per unified schema name strategy.
+  confidence: 0.98
+  evidence:
+  - Field name 'full_name' indicates a person's full name.
+  - Sample values like 'Emma Johnson' are typical full names.
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: email
+  source_fields:
+  - email_addr
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    email_addr: emma.johnson@example.com
+  example_output: emma.johnson@example.com
+  notes: Rename email_addr to email preserving email address.
+  confidence: 0.99
+  evidence:
+  - Field name 'email_addr' suggests email address.
+  - Sample values match email format.
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: phone
+  source_fields:
+  - phone
+  transformation_type: manual_review
+  expression:
+    requested_operation: normalize_phone
+    proposed_logic: Normalize valid phone values only after a source-specific country-code and missing-value
+      policy is approved.
+  example_input:
+    phone: 415-555-0188
+  example_output: null
+  notes: Phone normalization is deferred in Mapping Format Version 1.
+  confidence: 0.9
+  evidence:
+  - Field name 'phone' indicates phone number.
+  - Sample values like '415-555-0188' are typical phone formats.
+  status: needs_review
+  manual_review: true
+  review_reason: The source contains mixed phone formats and Version 1 does not support normalize_phone.
+- target_field: signup_date
+  source_fields:
+  - signup_dt
+  transformation_type: parse_date
+  expression:
+    input_formats:
+    - '%Y-%m-%d'
+    - '%m/%d/%Y'
+    - '%Y/%m/%d'
+    - '%m-%d-%Y'
+    output_format: '%Y-%m-%d'
+    on_error: 'null'
+  example_input:
+    signup_dt: 01/22/2024
+  example_output: '2024-01-22'
+  notes: Parse signup_dt to signup_date supporting multiple date formats; invalid dates yield null as
+    signup_date is nullable.
+  confidence: 0.85
+  evidence:
+  - Field name 'signup_dt' suggests signup date.
+  - Sample values include '2024-01-15', '01/22/2024', '2024/02/03'.
+  - One invalid value 'invalid_date' requires on_error null.
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: loyalty_tier
+  source_fields:
+  - loyalty_tier
+  transformation_type: direct
+  expression:
+    operation: copy
+  example_input:
+    loyalty_tier: gold
+  example_output: gold
+  notes: Direct mapping from loyalty_tier to loyalty_tier preserving customer loyalty program tier.
+  confidence: 0.95
+  evidence:
+  - Field name 'loyalty_tier' indicates loyalty level.
+  - Sample values 'gold', 'silver', 'bronze'.
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_system
+  source_fields: []
+  transformation_type: default_value
+  expression:
+    value: Customer A
+    apply_when: always
+  example_input: {}
+  example_output: Customer A
+  notes: Set source_system to constant 'Customer A' for provenance.
+  confidence: 1.0
+  evidence:
+  - Source system is Customer A as supplied.
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: unified_customer_id
+  source_fields:
+  - cust_id
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Generate a unique unified_customer_id for each customer by combining source_system
+      and source_customer_id or using a UUID to avoid collisions.
+  example_input:
+    cust_id: C1001
+  example_output: null
+  notes: unified_customer_id must be generated during onboarding to avoid collisions between source customer
+    IDs.
+  confidence: 1.0
+  evidence:
+  - Unified schema requires generated unified_customer_id for each customer.
+  status: needs_review
+  manual_review: true
+  review_reason: Key generation logic for unified_customer_id requires human implementation and validation.
+unmapped_source_fields: []
+unmapped_target_fields:
+- customer_segment
+warnings: []

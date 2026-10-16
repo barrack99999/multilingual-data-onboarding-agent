@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/mapping-format-v1.schema.json",
+  "title": "Data Onboarding Mapping Format Version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mapping_version",
+    "source_system",
+    "source_file",
+    "table_type",
+    "target_table",
+    "rules",
+    "unmapped_source_fields",
+    "unmapped_target_fields",
+    "warnings"
+  ],
+  "properties": {
+    "mapping_version": { "const": "1.0" },
+    "source_system": { "type": "string", "minLength": 1 },
+    "source_file": { "type": "string", "minLength": 1 },
+    "table_type": { "enum": ["customer", "order"] },
+    "target_table": { "enum": ["unified_customers", "unified_orders"] },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rule" }
+    },
+    "unmapped_source_fields": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "unmapped_target_fields": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "table_type": { "const": "customer" } } },
+      "then": { "properties": { "target_table": { "const": "unified_customers" } } }
+    },
+    {
+      "if": { "properties": { "table_type": { "const": "order" } } },
+      "then": { "properties": { "target_table": { "const": "unified_orders" } } }
+    }
+  ],
+  "$defs": {
+    "literal": {
+      "type": ["string", "number", "integer", "boolean", "null"]
+    },
+    "error_action": {
+      "enum": ["null", "manual_review", "reject_row"]
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_field",
+        "source_fields",
+        "transformation_type",
+        "expression",
+        "example_input",
+        "example_output",
+        "notes",
+        "confidence",
+        "evidence",
+        "status",
+        "manual_review",
+        "review_reason"
+      ],
+      "properties": {
+        "target_field": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "source_fields": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "transformation_type": {
+          "enum": [
+            "direct",
+            "rename",
+            "parse_date",
+            "map_value",
+            "split",
+            "currency_conversion",
+            "default_value",
+            "manual_review"
+          ]
+        },
+        "expression": { "type": "object" },
+        "example_input": { "type": "object" },
+        "example_output": true,
+        "notes": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "status": { "enum": ["accepted", "needs_review", "rejected"] },
+        "manual_review": { "type": "boolean" },
+        "review_reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "manual_review": { "const": true } } },
+          "then": { "properties": { "review_reason": { "type": "string", "minLength": 1 } } },
+          "else": { "properties": { "review_reason": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "default_value" } } },
+          "then": {
+            "properties": {
+              "source_fields": { "maxItems": 0 },
+              "example_input": { "maxProperties": 0 }
+            }
+          },
+          "else": { "properties": { "source_fields": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "enum": ["direct", "rename"] } } },
+          "then": {
+            "properties": {
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["operation"],
+                "properties": { "operation": { "const": "copy" } }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "parse_date" } } },
+          "then": {
+            "properties": {
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["input_formats", "output_format", "on_error"],
+                "properties": {
+                  "input_formats": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "type": "string", "minLength": 1 },
+                    "uniqueItems": true
+                  },
+                  "output_format": { "type": "string", "minLength": 1 },
+                  "on_error": { "$ref": "#/$defs/error_action" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "map_value" } } },
+          "then": {
+            "properties": {
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["value_map", "case_sensitive", "trim_before_match", "unmapped_action"],
+                "properties": {
+                  "value_map": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": { "$ref": "#/$defs/literal" }
+                  },
+                  "case_sensitive": { "type": "boolean" },
+                  "trim_before_match": { "type": "boolean" },
+                  "unmapped_action": {
+                    "enum": ["null", "manual_review", "reject_row", "preserve_original"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "split" } } },
+          "then": {
+            "properties": {
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["delimiter", "part_index", "trim", "on_error"],
+                "properties": {
+                  "delimiter": { "type": "string", "minLength": 1 },
+                  "part_index": { "type": "integer", "minimum": 0 },
+                  "trim": { "type": "boolean" },
+                  "on_error": { "$ref": "#/$defs/error_action" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "currency_conversion" } } },
+          "then": {
+            "properties": {
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "amount_field",
+                  "currency_field",
+                  "target_currency",
+                  "rate_source",
+                  "conversion_date_field",
+                  "rounding_decimals",
+                  "on_missing_rate"
+                ],
+                "properties": {
+                  "amount_field": { "type": "string", "minLength": 1 },
+                  "currency_field": { "type": "string", "minLength": 1 },
+                  "target_currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                  "rate_source": { "type": "string", "minLength": 1 },
+                  "conversion_date_field": { "type": "string", "minLength": 1 },
+                  "rounding_decimals": { "type": "integer", "minimum": 0, "maximum": 6 },
+                  "on_missing_rate": { "$ref": "#/$defs/error_action" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "default_value" } } },
+          "then": {
+            "properties": {
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["value", "apply_when"],
+                "properties": {
+                  "value": { "$ref": "#/$defs/literal" },
+                  "apply_when": { "enum": ["source_missing", "source_null", "always"] }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "transformation_type": { "const": "manual_review" } } },
+          "then": {
+            "properties": {
+              "manual_review": { "const": true },
+              "expression": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["requested_operation", "proposed_logic"],
+                "properties": {
+                  "requested_operation": {
+                    "enum": ["merge", "prefix", "normalize_phone", "other"]
+                  },
+                  "proposed_logic": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

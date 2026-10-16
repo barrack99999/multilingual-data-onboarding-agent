@@ -153,7 +153,7 @@ def main() -> None:
 
     evaluation = {
         "prompt_version": "multilingual-v2-with-explicit-evidence-sources",
-        "reference": "data/examples/week1 fictional public Customer B and C CSV files",
+        "reference": "data/examples/week1 Customer B and C CSV files from WORKKKK",
         "scoring_method": "Exact semantic-type match across all 24 B/C fields",
         "fallback_accuracy_threshold": FALLBACK_ACCURACY_THRESHOLD,
         "correct_fields": correct_count,

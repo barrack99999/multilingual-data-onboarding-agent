@@ -2,8 +2,17 @@
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+service-account*.json
+secrets/
+.aws/
+.ssh/
 
-# Python environments and caches
+# Python virtual environments and caches
 .venv/
 venv/
 __pycache__/
@@ -11,15 +20,33 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
 
-# Runtime outputs
+# Generated data and outputs
+data/generated/*
+!data/generated/.gitkeep
 outputs/*
 !outputs/.gitkeep
+data/private/
+data/raw/
+# Only the supplied teaching CSVs are intended for publication.
+*.csv
+*.tsv
+*.xlsx
+*.xls
+!data/examples/week1/*.csv
+!data/customer_a_customers.csv
 
-# Local/generated stress-test data
-data/generated/
+# Disposable debug/editor files
+*.log
+*.tmp
+*.bak
+*~
+*.swp
 
-# Editors and operating systems
+# Editor and operating-system files
 .DS_Store
 .idea/
 .vscode/
+

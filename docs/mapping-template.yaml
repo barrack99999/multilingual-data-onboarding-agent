@@ -1,0 +1,32 @@
+# Week 3 mapping template — format version 1.0
+# Replace angle-bracket placeholders before validation.
+# Do not use this file as a real customer mapping without completing every field.
+
+mapping_version: "1.0"
+source_system: "<source_system>"
+source_file: "<project_relative_csv_path>"
+table_type: "<customer_or_order>"
+target_table: "<unified_customers_or_unified_orders>"
+
+rules:
+  - target_field: "<target_field>"
+    source_fields:
+      - "<source_field>"
+    transformation_type: "<allowed_transformation_type>"
+    expression:
+      # Replace this object with the required keys for the selected type.
+      operation: copy
+    example_input:
+      "<source_field>": "<example_source_value>"
+    example_output: "<expected_target_value>"
+    notes: "<business explanation, assumption, or limitation>"
+    confidence: 0.0
+    evidence:
+      - "<field-name, sample-value, profile, or business-rule evidence>"
+    status: needs_review
+    manual_review: true
+    review_reason: "<reason for review, or use null when review is not required>"
+
+unmapped_source_fields: []
+unmapped_target_fields: []
+warnings: []

@@ -1,0 +1,216 @@
+{
+  "customer_a_customers.csv": {
+    "file_name": "customer_a_customers.csv",
+    "table_type": "customer",
+    "table_confidence": 0.95,
+    "fields": [
+      {
+        "field_name": "cust_id",
+        "semantic_type": "customer_id",
+        "description": "Unique identifier for each customer, indicated by the field name 'cust_id' and sample values like 'C1001', 'C1002' which follow a typical customer ID pattern.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'cust_id' suggests customer identifier."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'C1001', 'C1002', 'C1003', 'C1004' are unique and formatted as typical customer IDs."
+          }
+        ]
+      },
+      {
+        "field_name": "full_name",
+        "semantic_type": "full_name",
+        "description": "Full name of the customer, supported by the field name 'full_name' and sample values such as 'Emma Johnson' and 'Noah Smith' which are typical personal names.",
+        "confidence": 0.98,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'full_name' indicates a person's full name."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'Emma Johnson', 'Noah Smith', 'Olivia Brown', 'Liam Davis' are typical full names."
+          }
+        ]
+      },
+      {
+        "field_name": "email_addr",
+        "semantic_type": "email",
+        "description": "Email address of the customer, confirmed by the field name 'email_addr' and sample values that match email patterns like 'emma.johnson@example.com'.",
+        "confidence": 0.99,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'email_addr' suggests email address."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'emma.johnson@example.com' match email format and pattern."
+          }
+        ]
+      },
+      {
+        "field_name": "phone",
+        "semantic_type": "phone",
+        "description": "Phone number of the customer, inferred from the field name 'phone' and sample values such as '415-555-0188' and '+1 305 555 0144' which are typical phone number formats. There is a 25% null rate indicating some missing values.",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'phone' indicates phone number."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like '415-555-0188', '2125550199', '+1 305 555 0144' are typical phone number formats."
+          }
+        ]
+      },
+      {
+        "field_name": "signup_dt",
+        "semantic_type": "signup_date",
+        "description": "Date when the customer signed up, suggested by the field name 'signup_dt' and sample values mostly in date formats like '2024-01-15' and '01/22/2024'. One value 'invalid_date' indicates some data quality issues.",
+        "confidence": 0.85,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'signup_dt' suggests signup date."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values include '2024-01-15', '01/22/2024', '2024/02/03' which are date formats, though one value is 'invalid_date'."
+          }
+        ]
+      },
+      {
+        "field_name": "loyalty_tier",
+        "semantic_type": "loyalty_tier",
+        "description": "Customer loyalty tier or membership level, supported by the field name 'loyalty_tier' and sample values like 'gold', 'silver', 'bronze' which are common loyalty program tiers.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'loyalty_tier' indicates customer loyalty level."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values 'gold', 'silver', 'bronze' are typical loyalty tiers."
+          }
+        ]
+      }
+    ]
+  },
+  "customer_a_orders.csv": {
+    "file_name": "customer_a_orders.csv",
+    "table_type": "order",
+    "table_confidence": 0.95,
+    "fields": [
+      {
+        "field_name": "order_no",
+        "semantic_type": "order_id",
+        "description": "Field 'order_no' contains unique string identifiers like 'A-90001' for each order, indicating it is an order ID.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'order_no' suggests order number or order ID."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'A-90001', 'A-90002' are unique strings identifying orders."
+          }
+        ]
+      },
+      {
+        "field_name": "cust_id",
+        "semantic_type": "customer_id",
+        "description": "Field 'cust_id' contains unique string identifiers like 'C1001' for customers, indicating it is a customer ID.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'cust_id' suggests customer ID."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like 'C1001', 'C1002' are unique strings identifying customers."
+          }
+        ]
+      },
+      {
+        "field_name": "order_dt",
+        "semantic_type": "order_date",
+        "description": "Field 'order_dt' contains date values in various formats representing the date of the order.",
+        "confidence": 0.9,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'order_dt' suggests order date."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values include '2024-02-01', '02/05/2024', '2024/02/11', '2024-02-30' which are date-like strings."
+          }
+        ]
+      },
+      {
+        "field_name": "total_amt",
+        "semantic_type": "amount",
+        "description": "Field 'total_amt' contains numeric values representing monetary amounts for orders.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'total_amt' suggests total amount."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values like '129.99', '74.50', '0', '210.20' are numeric amounts."
+          },
+          {
+            "source": "profile_statistics",
+            "detail": "Patterns indicate looks_like_amount is true."
+          }
+        ]
+      },
+      {
+        "field_name": "currency",
+        "semantic_type": "currency",
+        "description": "Field 'currency' contains currency codes, here consistently 'USD', indicating the currency of the amounts.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'currency' suggests currency code."
+          },
+          {
+            "source": "sample_values",
+            "detail": "All sample values are 'USD'."
+          }
+        ]
+      },
+      {
+        "field_name": "status",
+        "semantic_type": "order_status",
+        "description": "Field 'status' contains order status values such as 'paid', 'shipped', 'cancelled', and 'pending'.",
+        "confidence": 0.95,
+        "evidence": [
+          {
+            "source": "field_name",
+            "detail": "Field name 'status' suggests order status."
+          },
+          {
+            "source": "sample_values",
+            "detail": "Sample values include 'paid', 'shipped', 'cancelled', 'pending'."
+          },
+          {
+            "source": "profile_statistics",
+            "detail": "Patterns indicate looks_like_status is true."
+          }
+        ]
+      }
+    ]
+  }
+}

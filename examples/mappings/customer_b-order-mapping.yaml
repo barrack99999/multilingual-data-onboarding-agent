@@ -1,0 +1,220 @@
+mapping_version: '1.0'
+source_system: Customer B
+source_file: data/examples/week1/customer_b_orders.csv
+table_type: order
+target_table: unified_orders
+rules:
+- target_field: source_order_id
+  source_fields:
+  - no_pesanan
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    no_pesanan: B-30001
+  example_output: B-30001
+  notes: Source order ID directly mapped from 'no_pesanan'.
+  confidence: 0.95
+  evidence:
+  - field_name 'no_pesanan' means order number in Indonesian
+  - sample value 'B-30001'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_customer_id
+  source_fields:
+  - id_pelanggan
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    id_pelanggan: ID-7001
+  example_output: ID-7001
+  notes: Source customer ID directly mapped from 'id_pelanggan'.
+  confidence: 0.95
+  evidence:
+  - field_name 'id_pelanggan' means customer ID in Indonesian
+  - sample value 'ID-7001'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: order_date
+  source_fields:
+  - tgl_pesanan
+  transformation_type: parse_date
+  expression:
+    input_formats:
+    - '%d-%m-%Y'
+    - '%d/%m/%Y'
+    - '%Y-%m-%d'
+    output_format: '%Y-%m-%d'
+    on_error: 'null'
+  example_input:
+    tgl_pesanan: 05/02/2024
+  example_output: '2024-02-05'
+  notes: Parsed order date from various Indonesian date formats to unified ISO format.
+  confidence: 0.98
+  evidence:
+  - field_name 'tgl_pesanan' means order date in Indonesian
+  - sample values '01-02-2024', '05/02/2024', '2024-02-16'
+  - inferred date type
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: amount_original
+  source_fields:
+  - total_harga
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    total_harga: '1500000'
+  example_output: '1500000'
+  notes: Copy non-missing total_harga. Shared runtime policy converts missing markers to null because amount_original is nullable; real zero stays zero.
+  confidence: 0.97
+  evidence:
+  - field_name 'total_harga' means total price in Indonesian
+  - sample value '1500000'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: currency_code
+  source_fields:
+  - mata_uang
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    mata_uang: IDR
+  example_output: IDR
+  notes: Currency code directly mapped from 'mata_uang'.
+  confidence: 0.99
+  evidence:
+  - field_name 'mata_uang' means currency in Indonesian
+  - sample value 'IDR'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: status_raw
+  source_fields:
+  - status_pesanan
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    status_pesanan: dibayar
+  example_output: dibayar
+  notes: Raw order status preserved from 'status_pesanan'.
+  confidence: 0.98
+  evidence:
+  - field_name 'status_pesanan' means order status in Indonesian
+  - sample value 'dibayar'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: order_status
+  source_fields:
+  - status_pesanan
+  transformation_type: map_value
+  expression:
+    value_map:
+      dibayar: paid
+      dikirim: shipped
+      dibatalkan: cancelled
+      menunggu: pending
+    case_sensitive: false
+    trim_before_match: true
+    unmapped_action: manual_review
+  example_input:
+    status_pesanan: dibayar
+  example_output: paid
+  notes: Map Indonesian status terms case-insensitively after trimming whitespace; unfamiliar statuses still require manual review.
+  confidence: 0.98
+  evidence:
+  - field_name 'status_pesanan' means order status in Indonesian
+  - sample values 'dibayar', 'dikirim', 'dibatalkan', 'menunggu'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_system
+  source_fields: []
+  transformation_type: default_value
+  expression:
+    value: Customer B
+    apply_when: always
+  example_input: {}
+  example_output: Customer B
+  notes: Set source_system to constant 'Customer B' for provenance.
+  confidence: 1.0
+  evidence:
+  - source system name provided
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: unified_order_id
+  source_fields:
+  - no_pesanan
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Generate a unique unified_order_id for each order to avoid collisions across sources.
+  example_input:
+    no_pesanan: B-30001
+  example_output: null
+  notes: Unified order ID must be generated during ingestion; no source field available.
+  confidence: 1.0
+  evidence:
+  - unified_order_id is a generated key per unified schema
+  status: needs_review
+  manual_review: true
+  review_reason: Requires key generation logic to create unique unified_order_id.
+- target_field: unified_customer_id
+  source_fields:
+  - id_pelanggan
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Lookup unified_customer_id by matching source_system and source_customer_id in unified_customers
+      table.
+  example_input:
+    id_pelanggan: ID-7001
+  example_output: null
+  notes: unified_customer_id requires cross-table lookup; mapping deferred.
+  confidence: 1.0
+  evidence:
+  - unified_customer_id derived by matching source_system and source_customer_id
+  status: needs_review
+  manual_review: true
+  review_reason: Requires cross-table lookup to resolve unified_customer_id.
+- target_field: amount_usd
+  source_fields:
+  - total_harga
+  - mata_uang
+  - tgl_pesanan
+  transformation_type: currency_conversion
+  expression:
+    target_currency: USD
+    amount_field: total_harga
+    on_missing_rate: 'null'
+    conversion_date_field: tgl_pesanan
+    rounding_decimals: 2
+    rate_source: approved_exchange_rate_source
+    currency_field: mata_uang
+  example_input:
+    total_harga: '1500000'
+    mata_uang: IDR
+    tgl_pesanan: 05/02/2024
+  example_output: null
+  notes: Convert amount_original from IDR to USD using dated exchange rates; null if rate missing.
+  confidence: 0.9
+  evidence:
+  - amount_original from 'total_harga'
+  - currency_code from 'mata_uang'
+  - order_date from 'tgl_pesanan'
+  - currency conversion requires exchange rate
+  status: needs_review
+  manual_review: true
+  review_reason: Requires approved exchange rate data source for conversion; otherwise result is null.
+unmapped_source_fields: []
+unmapped_target_fields: []
+warnings: []

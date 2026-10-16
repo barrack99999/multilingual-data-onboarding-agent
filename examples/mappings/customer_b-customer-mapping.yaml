@@ -1,0 +1,155 @@
+mapping_version: '1.0'
+source_system: Customer B
+source_file: data/examples/week1/customer_b_customers.csv
+table_type: customer
+target_table: unified_customers
+rules:
+- target_field: source_customer_id
+  source_fields:
+  - id_pelanggan
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    id_pelanggan: ID-7001
+  example_output: ID-7001
+  notes: Direct mapping of source customer ID from Indonesian field 'id_pelanggan'.
+  confidence: 0.95
+  evidence:
+  - field_name 'id_pelanggan' means customer ID in Indonesian
+  - sample value 'ID-7001' is unique customer identifier
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: full_name
+  source_fields:
+  - nama_lengkap
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    nama_lengkap: Siti Nurhaliza
+  example_output: Siti Nurhaliza
+  notes: Maps full customer name from 'nama_lengkap' preserving full name as per unified schema decision.
+  confidence: 0.98
+  evidence:
+  - field_name 'nama_lengkap' means full name in Indonesian
+  - sample value 'Siti Nurhaliza' is a typical full personal name
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: email
+  source_fields:
+  - email
+  transformation_type: direct
+  expression:
+    operation: copy
+  example_input:
+    email: siti.n@example.co.id
+  example_output: siti.n@example.co.id
+  notes: Direct mapping of email field.
+  confidence: 1.0
+  evidence:
+  - field_name 'email'
+  - sample value 'siti.n@example.co.id' matches email format
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: phone
+  source_fields:
+  - no_hp
+  transformation_type: manual_review
+  expression:
+    requested_operation: normalize_phone
+    proposed_logic: Normalize valid phone values only after a source-specific country-code and missing-value
+      policy is approved.
+  example_input:
+    no_hp: 0812-3456-7788
+  example_output: null
+  notes: Phone normalization is deferred in Mapping Format Version 1.
+  confidence: 0.9
+  evidence:
+  - field_name 'no_hp' is Indonesian abbreviation for mobile phone number
+  - sample value '0812-3456-7788' is a phone number
+  status: needs_review
+  manual_review: true
+  review_reason: The source contains mixed phone formats and Version 1 does not support normalize_phone.
+- target_field: signup_date
+  source_fields:
+  - tgl_daftar
+  transformation_type: parse_date
+  expression:
+    input_formats:
+    - '%d-%m-%Y'
+    - '%Y-%m-%d'
+    - '%d/%m/%Y'
+    output_format: '%Y-%m-%d'
+    on_error: 'null'
+  example_input:
+    tgl_daftar: 15-01-2024
+  example_output: '2024-01-15'
+  notes: Parses signup date from Indonesian 'tgl_daftar' supporting multiple date formats including 'dd-mm-yyyy',
+    'yyyy-mm-dd', and 'dd/mm/yyyy' to cover observed variations.
+  confidence: 0.97
+  evidence:
+  - field_name 'tgl_daftar' means registration date in Indonesian
+  - sample values '15-01-2024', '2024-02-14', '22/01/2024'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: customer_segment
+  source_fields:
+  - segmen
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    segmen: premium
+  example_output: premium
+  notes: Maps customer segment from 'segmen' field.
+  confidence: 0.9
+  evidence:
+  - field_name 'segmen' means segment in Indonesian
+  - sample values 'premium', 'regular'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_system
+  source_fields: []
+  transformation_type: default_value
+  expression:
+    value: Customer B
+    apply_when: always
+  example_input: {}
+  example_output: Customer B
+  notes: Sets source_system to constant 'Customer B' for provenance.
+  confidence: 1.0
+  evidence:
+  - Required field in unified schema
+  - Source system name provided
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: unified_customer_id
+  source_fields:
+  - id_pelanggan
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Generate a unique unified_customer_id for each customer by combining source_system
+      and source_customer_id or using a UUID to avoid collisions across sources.
+  example_input:
+    id_pelanggan: ID-7001
+  example_output: null
+  notes: Unified customer ID must be generated during onboarding to ensure uniqueness across sources.
+  confidence: 1.0
+  evidence:
+  - unified schema requires generated unified_customer_id
+  - no source field provides this value
+  status: needs_review
+  manual_review: true
+  review_reason: Key generation logic requires human implementation and validation.
+unmapped_source_fields: []
+unmapped_target_fields:
+- loyalty_tier
+warnings: []

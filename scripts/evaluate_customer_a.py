@@ -79,7 +79,7 @@ def main() -> None:
     correct_count = sum(row["correct"] for row in comparisons)
     total_fields = len(comparisons)
     evaluation = {
-        "reference": "data/examples/week1 fictional public Customer A CSV files",
+        "reference": "data/examples/week1 Customer A CSV files from WORKKKK",
         "scoring_method": "Exact semantic-type match for all 12 Customer A fields",
         "correct_fields": correct_count,
         "total_fields": total_fields,

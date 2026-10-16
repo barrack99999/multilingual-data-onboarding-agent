@@ -7,13 +7,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_OUTPUTS = PROJECT_ROOT / "outputs"
-CURATED_RESULTS = PROJECT_ROOT / "examples" / "results"
-OUTPUTS = (
-    RUNTIME_OUTPUTS
-    if (RUNTIME_OUTPUTS / "customer-a-field-analysis-evaluation.json").is_file()
-    else CURATED_RESULTS
-)
+OUTPUTS = PROJECT_ROOT / "outputs"
 
 
 def load_json(path: Path) -> dict:

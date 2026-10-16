@@ -1,0 +1,3 @@
+# Optional Week 2 embedding experiment, not required by OnboardingAgent.
+-r requirements.txt
+sentence-transformers==6.1.0

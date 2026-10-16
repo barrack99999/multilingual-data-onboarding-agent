@@ -1,9 +1,12 @@
 {
-  "contract_version": "1.0",
+  "contract_version": "1.7",
+  "reviewed_schema_default": "schemas/unified-schema.json",
+  "schema_path_notes": "SchemaRecommender still writes new drafts to outputs/unified-schema.json; the CLI default reviewed input is checked in separately. Explicit schema paths and per-run copies remain supported.",
   "status": "agreed_for_mvp",
   "path_rule": "All paths are relative to the project root unless explicitly absolute.",
   "format_rules": {
     "json": "UTF-8, valid JSON, two-space indentation when written to disk",
+    "yaml": "UTF-8, valid YAML, two-space indentation, no tabs, and quoted date-like strings when they must remain strings",
     "csv": "UTF-8 with a header row; source column names are preserved exactly",
     "field_order": "Source-field outputs preserve source column order",
     "target_names": "Unified target fields use snake_case"
@@ -147,7 +150,7 @@
       "warning_codes": ["PARTIAL_SOURCE_COVERAGE", "UNRESOLVED_MODELING_DECISION"]
     },
     "MappingGenerator": {
-      "implementation": "planned: src/mapping_generator.py",
+      "implementation": "src/mapping_generator.py",
       "llm_dependency": {
         "required": true,
         "purpose": "Draft semantic source-to-target mappings and explain non-obvious transformations.",
@@ -168,27 +171,46 @@
         }
       ],
       "output": {
-        "path_pattern": "outputs/mappings/<source>-<table>-mapping.json",
-        "format": "JSON",
+        "path_pattern": "outputs/mappings/<source>-<table>-mapping.yaml",
+        "format": "YAML",
+        "format_specification": "docs/week3-task1-mapping-format.md",
+        "validation_schema": "schemas/mapping-format-v1.schema.json",
         "required_fields": [
           "mapping_version",
           "source_system",
           "source_file",
           "table_type",
           "target_table",
-          "mappings",
+          "rules",
           "unmapped_source_fields",
-          "unmapped_target_fields"
+          "unmapped_target_fields",
+          "warnings"
         ],
         "mapping_item_required_fields": [
-          "source_field",
           "target_field",
-          "transformation",
+          "source_fields",
+          "transformation_type",
+          "expression",
+          "example_input",
+          "example_output",
+          "notes",
           "confidence",
           "evidence",
-          "status"
+          "status",
+          "manual_review",
+          "review_reason"
         ],
-        "status_values": ["accepted", "needs_review", "rejected"]
+        "status_values": ["accepted", "needs_review", "rejected"],
+        "transformation_type_values": [
+          "direct",
+          "rename",
+          "parse_date",
+          "map_value",
+          "split",
+          "currency_conversion",
+          "default_value",
+          "manual_review"
+        ]
       },
       "error_codes": [
         "INVALID_ANALYSIS",
@@ -205,57 +227,119 @@
         "AMBIGUOUS_TRANSFORMATION"
       ]
     },
-    "ETLConfigGenerator": {
-      "implementation": "planned: src/etl_config_generator.py",
+    "MappingValidator": {
+      "implementation": "src/mapping_validator.py",
+      "cli": "scripts/validate_mapping.py",
+      "helpers": "src/transform_helpers.py",
       "llm_dependency": {
         "required": false,
-        "purpose": "None for MVP; generate configuration from accepted mappings and schema rules.",
-        "plain_code_responsibility": "Translate accepted mappings into executable configuration and reject invalid references."
+        "purpose": "None; execute sample transformations with ordinary Python.",
+        "plain_code_responsibility": "Check rule configuration and examples, transform sampled rows, validate target values, and report outcomes."
+      },
+      "inputs": [
+        {"name": "source_csv", "format": "CSV", "required_fields": ["unique header row"]},
+        {"name": "mapping", "format": "YAML", "path_pattern": "outputs/mappings/<source>-<table>-mapping.yaml"},
+        {"name": "unified_schema", "format": "JSON", "path": "outputs/unified-schema.json"}
+      ],
+      "output": {
+        "path_pattern": "outputs/mapping-validation/<mapping-stem>-validation.json",
+        "format": "JSON",
+        "report_version": "1.0",
+        "required_fields": ["report_version", "source_system", "source_csv", "mapping_yaml", "target_table", "sampling", "status", "ready_for_etl", "summary", "rules", "sample_transformed_rows", "errors", "warnings", "test_rates"],
+        "rule_status_values": ["passed", "failed", "manual_review"],
+        "decimal_encoding": "Exact decimal string",
+        "summary_path": "outputs/mapping-validation/summary.json"
+      },
+      "sample_size_default": 20,
+      "runtime_missing_policy": {
+        "version": "1.1",
+        "markers": ["", "N/A", "null", "none"],
+        "case_sensitive": false,
+        "nullable_target": "Normalize to null with warnings",
+        "required_target": "Fail; never fabricate a replacement",
+        "raw_preservation_targets": ["status_raw"],
+        "missing_amount_conversion": "Return null, subject to target nullability; never substitute zero"
+      },
+      "sampling_method": "first_n_rows",
+      "exit_codes": {"0": "No failed rules; warnings and manual review may remain", "1": "Failed rules or fatal input errors"},
+      "error_codes": ["INPUT_ERROR", "INVALID_RULE", "UNMAPPED_TARGET", "INVALID_UNMAPPED_TARGET", "INVALID_SOURCE_COVERAGE", "REJECTED_RULE", "EXAMPLE_MISMATCH", "EXAMPLE_FAILED", "TRANSFORMATION_FAILED"],
+      "warning_codes": ["NULLABLE_UNMAPPED_TARGET", "MAPPING_WARNING", "MANUAL_REVIEW", "EMPTY_SAMPLE", "EXAMPLE_REVIEW", "VALUE_REVIEW", "HANDLED_VALUE"]
+    },
+    "ETLConfigGenerator": {
+      "implementation": "src/etl_config_generator.py",
+      "cli": "scripts/etl_config_generator.py",
+      "llm_dependency": {
+        "required": false,
+        "purpose": "None; create draft configuration from mappings, schema and validation evidence.",
+        "plain_code_responsibility": "Verify current input fingerprints, preserve validated steps, disable failed or review-required rules, and keep loading disabled."
       },
       "inputs": [
         {
-          "name": "accepted_mapping",
-          "path_pattern": "outputs/mappings/<source>-<table>-mapping.json",
-          "format": "JSON",
-          "required_fields": ["source_system", "source_file", "target_table", "mappings"]
+          "name": "customer_mappings",
+          "path_pattern": "outputs/mappings/<source>-<table>-mapping.yaml",
+          "format": "Two YAML files: customer and order",
+          "required_fields": ["source_system", "source_file", "target_table", "rules"]
         },
         {
           "name": "unified_schema",
           "path": "outputs/unified-schema.json",
           "format": "JSON",
           "required_fields": ["schema_version", "tables"]
+        },
+        {
+          "name": "source_system",
+          "format": "string",
+          "notes": "Must match both mappings exactly."
+        },
+        {
+          "name": "primary_validation_results",
+          "path_pattern": "outputs/mapping-validation/<mapping-stem>-validation.json",
+          "format": "Two JSON files matching the configured input CSVs",
+          "required_fields": ["report_version", "source_system", "source_csv", "mapping_yaml", "target_table", "sampling", "rules", "summary", "errors", "warnings", "input_sha256"]
+        },
+        {
+          "name": "additional_validation_results",
+          "format": "Optional JSON reports for additional test datasets using the same mappings/schema",
+          "notes": "Failures in these reports also prevent a rule being marked executable."
         }
       ],
       "output": {
-        "path_pattern": "outputs/etl-configs/<source>-<table>-etl-config.json",
+        "path_pattern": "outputs/etl-configs/<source>-etl-config.json",
         "format": "JSON",
+        "config_version": "2.0",
         "required_fields": [
           "config_version",
+          "contract_version",
           "source_system",
-          "source_file",
-          "target_table",
-          "read_options",
-          "field_mappings",
-          "validation_rules",
-          "reject_policy"
+          "schema_version",
+          "status",
+          "production_ready",
+          "input_files",
+          "target_tables",
+          "jobs",
+          "loading_behavior",
+          "summary",
+          "provenance",
+          "warnings"
         ],
-        "field_mapping_required_fields": ["source_field", "target_field", "transformation"]
+        "job_required_fields": ["source_file", "target_table", "table_type", "read_options", "field_mappings", "transformation_steps", "missing_value_policy", "validation_rules", "reject_policy", "loading_behavior", "unmapped_target_fields", "warnings", "validation_evidence"],
+        "field_mapping_required_fields": ["source_fields", "target_field", "transformation_type", "expression", "target_type", "nullable", "status", "manual_review", "review_reason", "enabled_for_dry_run", "proposed_transformation", "example_input", "example_output", "notes"],
+        "loading_enabled": false,
+        "production_ready": false
       },
       "error_codes": [
-        "INVALID_MAPPING",
-        "INVALID_SCHEMA",
-        "UNACCEPTED_MAPPING",
-        "TYPE_INCOMPATIBILITY",
-        "INVALID_TRANSFORMATION"
+        "INVALID_ETL_INPUT"
       ],
-      "warning_codes": ["NULLABLE_SOURCE_TO_REQUIRED_TARGET", "CONDITIONAL_RULE_REQUIRED"]
+      "warning_codes": ["DRAFT_ONLY", "MANUAL_REVIEW", "VALIDATION_FAILURE"],
+      "warning_passthrough": "MappingValidator warnings retain their code and add validation_report."
     },
     "DataDictionaryGenerator": {
-      "implementation": "planned: src/data_dictionary_generator.py",
+      "implementation": "src/data_dictionary_generator.py",
+      "cli": "scripts/data_dictionary_generator.py",
       "llm_dependency": {
         "required": false,
         "purpose": "None for MVP; descriptions, rationales, and lineage already exist in structured inputs.",
-        "plain_code_responsibility": "Render consistent JSON and Markdown documentation from schema and accepted mappings."
+        "plain_code_responsibility": "Validate and join schema, analyses and mapping drafts; render consistent JSON and Markdown without approving or executing transformations."
       },
       "inputs": [
         {
@@ -265,22 +349,33 @@
           "required_fields": ["schema_version", "tables"]
         },
         {
-          "name": "accepted_mappings",
-          "path_pattern": "outputs/mappings/*-mapping.json",
-          "format": "JSON array or set of files",
-          "required_fields_per_file": ["source_system", "target_table", "mappings"]
+          "name": "field_analyses",
+          "path_patterns": ["outputs/customer-a-field-analysis.json", "outputs/multilingual-field-analysis.json"],
+          "format": "JSON object keyed by CSV filename, or one FieldAnalyzer result",
+          "required_fields_per_file": ["file_name", "table_type", "fields"],
+          "field_item_required_fields": ["field_name", "semantic_type", "description", "confidence", "evidence"]
+        },
+        {
+          "name": "mapping_drafts",
+          "path_pattern": "outputs/mappings/*-mapping.yaml",
+          "format": "set of YAML files",
+          "required_fields_per_file": ["mapping_version", "source_system", "source_file", "table_type", "target_table", "rules", "unmapped_source_fields", "unmapped_target_fields", "warnings"],
+          "notes": "All supplied version 1 mappings are documented, including explicit review rules. Rules follow the MappingGenerator contract. Source fields must exist in the matching analysis, identified by source CSV basename and table_type."
         }
       ],
       "outputs": [
         {
           "path": "outputs/data-dictionary.json",
           "format": "JSON",
-          "required_fields": ["dictionary_version", "schema_version", "tables"]
+          "required_fields": ["dictionary_version", "contract_version", "schema_version", "status", "tables", "warnings", "summary", "provenance", "limitations"],
+          "dictionary_version": "1.0",
+          "status": "review_draft"
         },
         {
           "path": "outputs/data-dictionary.md",
           "format": "Markdown",
-          "required_sections": ["Unified Customers", "Unified Orders", "Source Lineage", "Known Limitations"]
+          "required_sections": ["Unified Customers", "Unified Orders", "Source Lineage", "Known Limitations", "Input Provenance"],
+          "diagnostics_path": "outputs/data-dictionary.md.diagnostics.json"
         }
       ],
       "dictionary_field_required_fields": [
@@ -289,10 +384,52 @@
         "nullable",
         "description",
         "source_lineage",
-        "transformation_notes"
+        "transformation_notes",
+        "table_name",
+        "source_fields",
+        "source_coverage",
+        "example_values",
+        "comments"
       ],
-      "error_codes": ["INVALID_SCHEMA", "INVALID_MAPPING", "MISSING_REQUIRED_DESCRIPTION"],
+      "consistency_rules": [
+        "One entry per schema field, preserving schema table and field order, exact type, nullable and business description.",
+        "Mappings own source lineage, expressions and example values; analyses supply source descriptions, confidence and evidence.",
+        "Explicitly unmapped nullable fields remain visible with no invented examples. Missing customer mappings and coverage disagreements produce warnings.",
+        "Manual-review rules and low-confidence interpretations remain flagged. Mapping examples are documented, not validation evidence.",
+        "No CSV rows, validation reports, API calls or database access are required. Input SHA-256 values support regeneration checks."
+      ],
+      "error_codes": ["INVALID_SCHEMA", "INVALID_ANALYSIS", "INVALID_MAPPING", "MISSING_REQUIRED_DESCRIPTION", "DICTIONARY_IO_ERROR"],
       "warning_codes": ["PARTIAL_LINEAGE", "MISSING_OPTIONAL_MAPPING", "OPEN_ISSUE"]
+    },
+    "OnboardingAgent": {
+      "implementation": "src/onboarding_agent.py",
+      "cli": "onboarding_agent.py",
+      "llm_dependency": {
+        "required": "Live FieldAnalyzer and MappingGenerator only; explicit artifact reuse bypasses their API calls.",
+        "plain_code_responsibility": "Ordered orchestration, input selection, schema reuse, persistence, validation, draft export and run logging."
+      },
+      "inputs": {
+        "required": ["source_system", "input_dir", "output_dir"],
+        "optional": ["schema_path", "customer_csv", "order_csv", "analysis_paths", "mapping_dir", "sample_size", "model"],
+        "cli_schema_default": "schemas/unified-schema.json",
+        "schema_generation": "--recommend-schema explicitly opts into a single-run draft; function schema_path=None has the same meaning.",
+        "csv_selection": "Exact <source_slug>_customers.csv and <source_slug>_orders.csv in input_dir, or both explicit CSV paths.",
+        "output_safety": "Directory must be new or empty; run_log.json is exclusively created; completed prior runs are not overwritten."
+      },
+      "step_order": ["discover_inputs", "csv_profiling", "field_analysis", "schema_recommendation", "mapping_generation", "mapping_validation", "etl_config_generation", "data_dictionary_generation", "export_outputs"],
+      "output_paths": ["<output_dir>/profiles/*_profile.json", "<output_dir>/analyses/*-analysis.json", "<output_dir>/field-analysis.json", "<output_dir>/unified-schema.json", "<output_dir>/schema-checks.json", "<output_dir>/mappings/*-mapping.yaml", "<output_dir>/validation/*-validation.json", "<output_dir>/etl-configs/*-etl-config.json", "<output_dir>/data-dictionary.json", "<output_dir>/data-dictionary.md", "<output_dir>/output-manifest.json", "<output_dir>/run_log.json"],
+      "run_log": {
+        "run_version": "1.0",
+        "required_fields": ["run_version", "contract_version", "run_id", "source_system", "status", "started_at", "finished_at", "production_ready", "inputs", "steps", "errors", "warnings", "final_outputs"],
+        "step_required_fields": ["name", "status", "mode", "outputs", "errors", "warnings"],
+        "terminal_statuses": ["completed", "completed_with_warnings", "failed"],
+        "step_statuses": ["pending", "running", "success", "warning", "failed", "skipped"],
+        "modes": ["local", "live_llm", "reused"],
+        "diagnostics": "Controller consolidates shared-shaped error/warning items per step and at top level in run_log.json; standalone module CLIs retain their sidecar contracts. Top-level errors add step and fatal."
+      },
+      "failure_policy": "Exceptions fail the current step, mark downstream steps skipped, preserve completed artifacts and exit 1. Validation row/rule failures remain nonfatal findings and become disabled review steps in ETL drafts. Completed review drafts exit 0 with warnings.",
+      "reuse_policy": "Schema bytes are preserved. Analyses require matching filenames, field order and table types but semantic freshness is not proven. Reused mappings must match the exact source CSV paths and are structurally checked; sample validation is rerun.",
+      "limits": "One source system and exactly one customer/order CSV pair per invocation. No database loading or autonomous tool selection."
     }
   },
   "change_control": {

@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 class SourceCoverage(BaseModel):
     """Where a proposed unified field comes from."""
 
-    sources: list[Literal["Customer A", "Customer B", "Customer C"]]
+    sources: list[str]
     source_fields: list[str]
     coverage_note: str
 
@@ -87,18 +87,14 @@ def _coverage(
     for file_name, analysis in analyses.items():
         if analysis.get("table_type") != table_type:
             continue
-        source = _source_name(file_name)
+        source = analysis.get("source_system") or _source_name(file_name)
         if source is None:
             continue
         for field in analysis.get("fields", []):
             if field.get("semantic_type") == semantic_type:
                 pairs.append((source, field["field_name"]))
 
-    ordered_sources = [
-        source
-        for source in ("Customer A", "Customer B", "Customer C")
-        if any(pair[0] == source for pair in pairs)
-    ]
+    ordered_sources = sorted({source for source, _ in pairs})
     source_fields = [f"{source}: {field}" for source, field in pairs]
     return SourceCoverage(
         sources=ordered_sources,
@@ -111,9 +107,9 @@ def _coverage(
     )
 
 
-def _derived_coverage(note: str) -> SourceCoverage:
+def _derived_coverage(note: str, sources: list[str] | None = None) -> SourceCoverage:
     return SourceCoverage(
-        sources=["Customer A", "Customer B", "Customer C"],
+        sources=sources if sources is not None else ["Customer A", "Customer B", "Customer C"],
         source_fields=[],
         coverage_note=note,
     )
@@ -149,7 +145,7 @@ def _find_field(table: dict[str, Any], name: str) -> dict[str, Any]:
     )
 
 
-def validate_recommendation(result: dict[str, Any]) -> list[dict[str, Any]]:
+def validate_recommendation(result: dict[str, Any], *, expected_sources: set[str] | None = None) -> list[dict[str, Any]]:
     """Return deterministic checks for required Task 4 design decisions."""
     tables = {table["name"]: table for table in result["tables"]}
     customers = tables.get("unified_customers")
@@ -267,7 +263,8 @@ def validate_recommendation(result: dict[str, Any]) -> list[dict[str, Any]]:
         "currency_code": orders,
         "status_raw": orders,
     }
-    expected_sources = {"Customer A", "Customer B", "Customer C"}
+    if expected_sources is None:
+        expected_sources = {"Customer A", "Customer B", "Customer C"}
     add(
         "core_source_coverage_complete",
         all(
@@ -275,15 +272,24 @@ def validate_recommendation(result: dict[str, Any]) -> list[dict[str, Any]]:
             == expected_sources
             for field_name, table in full_coverage_fields.items()
         ),
-        "Core concepts must have direct coverage from Customers A, B, and C.",
+        f"Core concepts must have direct coverage from {', '.join(sorted(expected_sources))}.",
     )
     return checks
 
 
-def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
+def recommend_schema(field_analyses: dict[str, Any], *, source_system: str | None = None) -> dict[str, Any]:
     """Build and validate the Week 2 MVP unified schema locally."""
     if not field_analyses:
         raise ValueError("At least one field-analysis result is required.")
+    if source_system is not None:
+        if not isinstance(source_system, str) or not source_system.strip():
+            raise ValueError("source_system must be a nonempty string.")
+        field_analyses = {name: {**analysis, "source_system": source_system}
+                          for name, analysis in field_analyses.items()}
+    sources = sorted({analysis.get("source_system") or _source_name(name)
+                      for name, analysis in field_analyses.items()} - {None})
+    if not sources:
+        raise ValueError("Unknown source names; supply source_system or source_system metadata in analyses.")
 
     customers = UnifiedTable(
         name="unified_customers",
@@ -293,13 +299,13 @@ def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
             _field(
                 "unified_customer_id", "string", False,
                 "Generated identifier for a customer in the unified model.",
-                _derived_coverage("Generated during onboarding for every customer source."),
+                _derived_coverage("Generated during onboarding for every customer source.", sources),
                 "A generated key avoids collisions when different systems reuse the same customer ID.",
             ),
             _field(
                 "source_system", "string", False,
                 "System or customer dataset from which the record originated.",
-                _derived_coverage("Assigned during ingestion for Customers A, B, and C."),
+                _derived_coverage("Assigned during ingestion for each supplied source system.", sources),
                 "Required for provenance and to make source identifiers unambiguous.",
             ),
             _field(
@@ -354,13 +360,13 @@ def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
             _field(
                 "unified_order_id", "string", False,
                 "Generated identifier for an order in the unified model.",
-                _derived_coverage("Generated during onboarding for every order source."),
+                _derived_coverage("Generated during onboarding for every order source.", sources),
                 "A generated key prevents collisions between source order identifiers.",
             ),
             _field(
                 "source_system", "string", False,
                 "System or customer dataset from which the order originated.",
-                _derived_coverage("Assigned during ingestion for Customers A, B, and C."),
+                _derived_coverage("Assigned during ingestion for each supplied source system.", sources),
                 "Required for provenance and to make source identifiers unambiguous.",
             ),
             _field(
@@ -372,7 +378,7 @@ def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
             _field(
                 "unified_customer_id", "string", True,
                 "Resolved link to the matching row in unified_customers.",
-                _derived_coverage("Derived by matching source_system and source_customer_id to unified_customers."),
+                _derived_coverage("Derived by matching source_system and source_customer_id to unified_customers.", sources),
                 "Nullable until source_system and source_customer_id successfully resolve to a unified customer.",
             ),
             _field(
@@ -402,7 +408,7 @@ def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
             _field(
                 "amount_usd", "decimal(18,2)", True,
                 "Order amount converted to US dollars.",
-                _derived_coverage("Calculated from amount_original, currency_code, order_date, and an exchange-rate source."),
+                _derived_coverage("Calculated from amount_original, currency_code, order_date, and an exchange-rate source.", sources),
                 "A calculated field supports comparison, but remains nullable until a dated exchange rate is available.",
             ),
             _field(
@@ -414,7 +420,7 @@ def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
             _field(
                 "order_status", "enum(pending, paid, shipped, cancelled, unknown)", False,
                 "Normalized order status used consistently across all sources.",
-                _derived_coverage("Derived from each source's raw order-status field."),
+                _derived_coverage("Derived from each source's raw order-status field.", sources),
                 "A controlled enum supports reliable reporting; unknown safely captures unmapped values.",
             ),
         ],
@@ -442,8 +448,9 @@ def recommend_schema(field_analyses: dict[str, Any]) -> dict[str, Any]:
         tables=[customers, orders],
     )
     result = recommendation.model_dump()
-    checks = validate_recommendation(result)
-    failed = [check for check in checks if not check["passed"]]
+    checks = validate_recommendation(result, expected_sources=set(sources))
+    # Missing concepts are coverage warnings, not permission to invent fields.
+    failed = [check for check in checks if not check["passed"] and check["check"] != "core_source_coverage_complete"]
     if failed:
         raise ValueError(f"Schema recommendation failed validation: {failed}")
     return result

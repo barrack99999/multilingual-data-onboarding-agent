@@ -1,0 +1,220 @@
+mapping_version: '1.0'
+source_system: Customer A
+source_file: data/examples/week1/customer_a_orders.csv
+table_type: order
+target_table: unified_orders
+rules:
+- target_field: source_order_id
+  source_fields:
+  - order_no
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    order_no: A-90001
+  example_output: A-90001
+  notes: Source order ID mapped directly from 'order_no'.
+  confidence: 0.95
+  evidence:
+  - field_name 'order_no' suggests order ID
+  - sample values like 'A-90001'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_customer_id
+  source_fields:
+  - cust_id
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    cust_id: C1001
+  example_output: C1001
+  notes: Source customer ID mapped directly from 'cust_id'.
+  confidence: 0.95
+  evidence:
+  - field_name 'cust_id' suggests customer ID
+  - sample values like 'C1001'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: order_date
+  source_fields:
+  - order_dt
+  transformation_type: parse_date
+  expression:
+    input_formats:
+    - '%Y-%m-%d'
+    - '%m/%d/%Y'
+    - '%Y/%m/%d'
+    - '%m-%d-%Y'
+    output_format: '%Y-%m-%d'
+    on_error: 'null'
+  example_input:
+    order_dt: '2024-02-01'
+  example_output: '2024-02-01'
+  notes: Parsed order date from multiple observed formats; invalid dates yield null as target is nullable.
+  confidence: 0.9
+  evidence:
+  - field_name 'order_dt' suggests order date
+  - sample values include '2024-02-01', '02/05/2024', '2024/02/11'
+  - nullable order_date in unified schema
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: amount_original
+  source_fields:
+  - total_amt
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    total_amt: '129.99'
+  example_output: '129.99'
+  notes: Copy non-missing total_amt. Shared runtime policy converts missing markers to null because amount_original is nullable; real zero stays zero.
+  confidence: 0.95
+  evidence:
+  - field_name 'total_amt' suggests amount
+  - sample numeric values like '129.99'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: currency_code
+  source_fields:
+  - currency
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    currency: USD
+  example_output: USD
+  notes: Currency code mapped directly from 'currency'.
+  confidence: 0.95
+  evidence:
+  - field_name 'currency' suggests currency code
+  - all sample values are 'USD'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: amount_usd
+  source_fields:
+  - total_amt
+  - currency
+  - order_dt
+  transformation_type: currency_conversion
+  expression:
+    target_currency: USD
+    on_missing_rate: 'null'
+    rate_source: approved_exchange_rate_source
+    amount_field: total_amt
+    rounding_decimals: 2
+    currency_field: currency
+    conversion_date_field: order_dt
+  example_input:
+    total_amt: '129.99'
+    currency: USD
+    order_dt: '2024-02-01'
+  example_output: 129.99
+  notes: Converted amount to USD using order date and currency; USD to USD conversion returns same value.
+  confidence: 0.95
+  evidence:
+  - amount_original and currency_code present
+  - order_date present
+  - currency is USD
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: status_raw
+  source_fields:
+  - status
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    status: paid
+  example_output: paid
+  notes: Preserved original order status as status_raw.
+  confidence: 0.95
+  evidence:
+  - field_name 'status' suggests order status
+  - sample values include 'paid', 'shipped', 'cancelled', 'pending'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: order_status
+  source_fields:
+  - status
+  transformation_type: map_value
+  expression:
+    value_map:
+      paid: paid
+      shipped: shipped
+      cancelled: cancelled
+      pending: pending
+    case_sensitive: false
+    trim_before_match: true
+    unmapped_action: manual_review
+  example_input:
+    status: paid
+  example_output: paid
+  notes: Mapped source status to controlled enum; unmapped values require manual review.
+  confidence: 0.95
+  evidence:
+  - field_name 'status' suggests order status
+  - sample values include 'paid', 'shipped', 'cancelled', 'pending'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_system
+  source_fields: []
+  transformation_type: default_value
+  expression:
+    value: Customer A
+    apply_when: always
+  example_input: {}
+  example_output: Customer A
+  notes: Set source_system to constant 'Customer A' for provenance.
+  confidence: 1.0
+  evidence:
+  - source system provided as 'Customer A'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: unified_order_id
+  source_fields:
+  - order_no
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Generate a unique unified_order_id for each order during ingestion to avoid collisions.
+  example_input:
+    order_no: A-90001
+  example_output: null
+  notes: Unified order ID must be generated during ingestion; no source field available.
+  confidence: 1.0
+  evidence:
+  - unified_order_id is a generated key in unified schema
+  status: needs_review
+  manual_review: true
+  review_reason: Requires key generation logic during ingestion.
+- target_field: unified_customer_id
+  source_fields:
+  - cust_id
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Lookup unified_customer_id by matching source_system and source_customer_id in unified_customers
+      table.
+  example_input:
+    cust_id: C1001
+  example_output: null
+  notes: Unified customer ID requires cross-table lookup; mapping deferred.
+  confidence: 1.0
+  evidence:
+  - unified_customer_id derived by matching source_system and source_customer_id
+  status: needs_review
+  manual_review: true
+  review_reason: Requires cross-table lookup logic to resolve unified_customer_id.
+unmapped_source_fields: []
+unmapped_target_fields: []
+warnings: []

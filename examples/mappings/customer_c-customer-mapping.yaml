@@ -1,0 +1,153 @@
+mapping_version: '1.0'
+source_system: Customer C
+source_file: data/examples/week1/customer_c_customers.csv
+table_type: customer
+target_table: unified_customers
+rules:
+- target_field: source_customer_id
+  source_fields:
+  - Kundennummer
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    Kundennummer: DE-501
+  example_output: DE-501
+  notes: Direct rename from German 'Kundennummer' to source_customer_id preserving unique customer ID.
+  confidence: 0.95
+  evidence:
+  - field_name 'Kundennummer' means customer number
+  - sample value 'DE-501' is unique customer ID
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: full_name
+  source_fields:
+  - Name1
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    Name1: Anna Mueller
+  example_output: Anna Mueller
+  notes: Full name mapped directly from 'Name1' as per unified schema decision to keep full_name.
+  confidence: 0.95
+  evidence:
+  - field_name 'Name1' suggests personal name
+  - sample value 'Anna Mueller' is full personal name
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: email
+  source_fields:
+  - EMail
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    EMail: anna.mueller@example.de
+  example_output: anna.mueller@example.de
+  notes: Email address mapped directly from 'EMail'.
+  confidence: 1.0
+  evidence:
+  - field_name 'EMail' indicates email address
+  - sample value 'anna.mueller@example.de' matches email format
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: phone
+  source_fields:
+  - Telefon
+  transformation_type: manual_review
+  expression:
+    requested_operation: normalize_phone
+    proposed_logic: Normalize valid phone values only after a source-specific country-code and missing-value
+      policy is approved.
+  example_input:
+    Telefon: +49 30 123456
+  example_output: null
+  notes: Phone normalization is deferred in Mapping Format Version 1.
+  confidence: 0.9
+  evidence:
+  - field_name 'Telefon' means phone
+  - sample value '+49 30 123456' is phone number
+  status: needs_review
+  manual_review: true
+  review_reason: The source contains mixed phone formats and Version 1 does not support normalize_phone.
+- target_field: signup_date
+  source_fields:
+  - Erfassungsdatum
+  transformation_type: parse_date
+  expression:
+    input_formats:
+    - '%d.%m.%Y'
+    - '%Y-%m-%d'
+    - '%d/%m/%Y'
+    output_format: '%Y-%m-%d'
+    on_error: 'null'
+  example_input:
+    Erfassungsdatum: 15.01.2024
+  example_output: '2024-01-15'
+  notes: Parsed German date format dd.mm.yyyy to ISO date format for signup_date.
+  confidence: 0.95
+  evidence:
+  - field_name 'Erfassungsdatum' means registration date
+  - sample value '15.01.2024' is date in dd.mm.yyyy format
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: customer_segment
+  source_fields:
+  - Kundengruppe
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    Kundengruppe: A
+  example_output: A
+  notes: Customer segment mapped directly from 'Kundengruppe'.
+  confidence: 0.9
+  evidence:
+  - field_name 'Kundengruppe' means customer group
+  - sample value 'A' is customer segment
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_system
+  source_fields: []
+  transformation_type: default_value
+  expression:
+    value: Customer C
+    apply_when: always
+  example_input: {}
+  example_output: Customer C
+  notes: Fixed source_system value for provenance.
+  confidence: 1.0
+  evidence:
+  - source system provided as 'Customer C'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: unified_customer_id
+  source_fields:
+  - Kundennummer
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Generate a unique unified_customer_id for each customer by combining source_system
+      and source_customer_id or using a UUID to avoid collisions across sources.
+  example_input:
+    Kundennummer: DE-501
+  example_output: null
+  notes: Unified customer ID must be generated during onboarding to ensure uniqueness across sources.
+  confidence: 1.0
+  evidence:
+  - unified schema requires generated unified_customer_id
+  - no source field provides this ID
+  status: needs_review
+  manual_review: true
+  review_reason: Key generation requires human-approved logic or system process.
+unmapped_source_fields: []
+unmapped_target_fields:
+- loyalty_tier
+warnings: []

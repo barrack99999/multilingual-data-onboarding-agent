@@ -1,3 +1,5 @@
-openai>=1.0.0
-python-dotenv>=1.0.0
-pydantic>=2.0.0
+# Core CLI dependencies, pinned to the versions verified with Python 3.12.
+openai==3.19.0
+python-dotenv==1.2.3
+pydantic==2.13.5
+PyYAML==6.0.3

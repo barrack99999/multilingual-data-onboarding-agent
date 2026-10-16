@@ -1,0 +1,223 @@
+mapping_version: '1.0'
+source_system: Customer C
+source_file: data/examples/week1/customer_c_orders.csv
+table_type: order
+target_table: unified_orders
+rules:
+- target_field: source_order_id
+  source_fields:
+  - Bestellnummer
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    Bestellnummer: C-80001
+  example_output: C-80001
+  notes: German field 'Bestellnummer' means 'order number', directly mapped to source_order_id.
+  confidence: 0.98
+  evidence:
+  - 'field_name: ''Bestellnummer'' means ''order number'''
+  - 'sample_values: ''C-80001'''
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_customer_id
+  source_fields:
+  - Kundennummer
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    Kundennummer: DE-501
+  example_output: DE-501
+  notes: German field 'Kundennummer' means 'customer number', directly mapped to source_customer_id.
+  confidence: 0.98
+  evidence:
+  - 'field_name: ''Kundennummer'' means ''customer number'''
+  - 'sample_values: ''DE-501'''
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: order_date
+  source_fields:
+  - Bestelldatum
+  transformation_type: parse_date
+  expression:
+    input_formats:
+    - '%d.%m.%Y'
+    - '%Y-%m-%d'
+    - '%d/%m/%Y'
+    output_format: '%Y-%m-%d'
+    on_error: 'null'
+  example_input:
+    Bestelldatum: 01.02.2024
+  example_output: '2024-02-01'
+  notes: Parsed German date format DD.MM.YYYY to unified ISO date format.
+  confidence: 0.99
+  evidence:
+  - 'field_name: ''Bestelldatum'' means ''order date'''
+  - 'sample_values: ''01.02.2024'''
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: amount_original
+  source_fields:
+  - Betrag
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Convert German decimal comma to dot decimal for decimal(18,2) amount.
+  example_input:
+    Betrag: 129,99
+  example_output: null
+  notes: Amount uses comma as decimal separator; requires conversion to dot decimal. Manual review needed
+    for exact conversion logic.
+  confidence: 0.97
+  evidence:
+  - 'field_name: ''Betrag'' means ''amount'''
+  - 'sample_values: ''129,99'' with comma decimal separator'
+  status: needs_review
+  manual_review: true
+  review_reason: Amount uses comma decimal separator; conversion to decimal requires manual review.
+- target_field: currency_code
+  source_fields:
+  - Währung
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    Währung: EUR
+  example_output: EUR
+  notes: German field 'Währung' means 'currency', mapped directly to currency_code.
+  confidence: 0.99
+  evidence:
+  - 'field_name: ''Währung'' means ''currency'''
+  - 'sample_values: ''EUR'''
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: status_raw
+  source_fields:
+  - StatusCode
+  transformation_type: rename
+  expression:
+    operation: copy
+  example_input:
+    StatusCode: BEZ
+  example_output: BEZ
+  notes: Preserve original order status code for auditing and mapping.
+  confidence: 0.9
+  evidence:
+  - 'field_name: ''StatusCode'' indicates order status'
+  - 'sample_values: ''BEZ'''
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: order_status
+  source_fields:
+  - StatusCode
+  transformation_type: map_value
+  expression:
+    value_map:
+      BEZ: paid
+      VERS: shipped
+      STOR: cancelled
+      'OFF': pending
+    case_sensitive: false
+    trim_before_match: true
+    unmapped_action: manual_review
+  example_input:
+    StatusCode: BEZ
+  example_output: paid
+  notes: Map German status codes case-insensitively after trimming whitespace; unfamiliar codes still require manual review.
+  confidence: 0.9
+  evidence:
+  - 'field_name: ''StatusCode'' indicates order status'
+  - 'sample_values: ''BEZ'', ''VERS'', ''STOR'', ''OFF'''
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: source_system
+  source_fields: []
+  transformation_type: default_value
+  expression:
+    value: Customer C
+    apply_when: always
+  example_input: {}
+  example_output: Customer C
+  notes: Set source_system to constant 'Customer C' for provenance.
+  confidence: 1.0
+  evidence:
+  - source_system supplied as 'Customer C'
+  status: accepted
+  manual_review: false
+  review_reason: null
+- target_field: unified_order_id
+  source_fields:
+  - Bestellnummer
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Generate a unique unified_order_id for each order to prevent collisions across sources.
+  example_input:
+    Bestellnummer: C-80001
+  example_output: null
+  notes: Unified order ID must be generated during onboarding to ensure uniqueness.
+  confidence: 1.0
+  evidence:
+  - unified_orders.unified_order_id is a generated key
+  status: needs_review
+  manual_review: true
+  review_reason: Requires generation of unique unified_order_id not present in source.
+- target_field: unified_customer_id
+  source_fields:
+  - Kundennummer
+  transformation_type: manual_review
+  expression:
+    requested_operation: other
+    proposed_logic: Resolve unified_customer_id by matching source_system and source_customer_id to unified_customers
+      table.
+  example_input:
+    Kundennummer: DE-501
+  example_output: null
+  notes: Unified customer ID is resolved by lookup; not present in source data.
+  confidence: 1.0
+  evidence:
+  - unified_orders.unified_customer_id is resolved by matching source_system and source_customer_id
+  status: needs_review
+  manual_review: true
+  review_reason: Requires lookup to resolve unified_customer_id from source_customer_id and source_system.
+- target_field: amount_usd
+  source_fields:
+  - Betrag
+  - Währung
+  - Bestelldatum
+  transformation_type: currency_conversion
+  expression:
+    rounding_decimals: 2
+    conversion_date_field: Bestelldatum
+    amount_field: Betrag
+    on_missing_rate: 'null'
+    currency_field: Währung
+    target_currency: USD
+    rate_source: approved_exchange_rate_source
+  example_input:
+    Betrag: 129,99
+    Währung: EUR
+    Bestelldatum: 01.02.2024
+  example_output: null
+  notes: Amount in USD requires currency conversion using dated exchange rates; no rate data supplied
+    here.
+  confidence: 0.8
+  evidence:
+  - amount_usd calculated from amount_original, currency_code, order_date, and exchange rates
+  status: needs_review
+  manual_review: true
+  review_reason: No approved exchange-rate data supplied; currency conversion requires manual review.
+unmapped_source_fields: []
+unmapped_target_fields: []
+warnings:
+- Amount field 'Betrag' uses comma decimal separator; conversion requires manual review.
+- No source field available to generate 'unified_order_id' and 'unified_customer_id'; these are generated
+  or resolved later.
+- No source field or exchange rate data to calculate 'amount_usd'.

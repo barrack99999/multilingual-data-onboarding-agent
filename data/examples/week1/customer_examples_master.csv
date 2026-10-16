@@ -1,0 +1,25 @@
+master_row_id,source_system,source_table,entity_type,source_row_number,cust_id,full_name,email_addr,phone,signup_dt,loyalty_tier,order_no,order_dt,total_amt,currency,status,id_pelanggan,nama_lengkap,email,no_hp,tgl_daftar,segmen,no_pesanan,tgl_pesanan,total_harga,mata_uang,status_pesanan,Kundennummer,Name1,EMail,Telefon,Erfassungsdatum,Kundengruppe,Bestellnummer,Bestelldatum,Betrag,Währung,StatusCode
+1,customer_a_us,customer_a_customers,customers,1,C1001,Emma Johnson,emma.johnson@example.com,415-555-0188,2024-01-15,gold,,,,,,,,,,,,,,,,,,,,,,,,,,,
+2,customer_a_us,customer_a_customers,customers,2,C1002,Noah Smith,noah.smith@example.com,2125550199,01/22/2024,silver,,,,,,,,,,,,,,,,,,,,,,,,,,,
+3,customer_a_us,customer_a_customers,customers,3,C1003,Olivia Brown,olivia.brown@example.com,N/A,2024/02/03,bronze,,,,,,,,,,,,,,,,,,,,,,,,,,,
+4,customer_a_us,customer_a_customers,customers,4,C1004,Liam Davis,liam.davis@example.com,+1 305 555 0144,invalid_date,gold,,,,,,,,,,,,,,,,,,,,,,,,,,,
+5,customer_a_us,customer_a_orders,orders,1,C1001,,,,,,A-90001,2024-02-01,129.99,USD,paid,,,,,,,,,,,,,,,,,,,,,,
+6,customer_a_us,customer_a_orders,orders,2,C1002,,,,,,A-90002,02/05/2024,74.50,USD,shipped,,,,,,,,,,,,,,,,,,,,,,
+7,customer_a_us,customer_a_orders,orders,3,C1003,,,,,,A-90003,2024/02/11,0,USD,cancelled,,,,,,,,,,,,,,,,,,,,,,
+8,customer_a_us,customer_a_orders,orders,4,C1004,,,,,,A-90004,2024-02-30,210.20,USD,pending,,,,,,,,,,,,,,,,,,,,,,
+9,customer_b_id,customer_b_customers,customers,1,,,,,,,,,,,,ID-7001,Siti Nurhaliza,siti.n@example.co.id,0812-3456-7788,15-01-2024,premium,,,,,,,,,,,,,,,,
+10,customer_b_id,customer_b_customers,customers,2,,,,,,,,,,,,ID-7002,Budi Santoso,budi.s@example.co.id,+62 812 4444 0002,22/01/2024,regular,,,,,,,,,,,,,,,,
+11,customer_b_id,customer_b_customers,customers,3,,,,,,,,,,,,ID-7003,Andi Wijaya,andi.w@example.co.id,null,03-02-2024,regular,,,,,,,,,,,,,,,,
+12,customer_b_id,customer_b_customers,customers,4,,,,,,,,,,,,ID-7004,Rina Kartika,rina.k@example.co.id,08135550111,2024-02-14,premium,,,,,,,,,,,,,,,,
+13,customer_b_id,customer_b_orders,orders,1,,,,,,,,,,,,ID-7001,,,,,,B-30001,01-02-2024,1500000,IDR,dibayar,,,,,,,,,,,
+14,customer_b_id,customer_b_orders,orders,2,,,,,,,,,,,,ID-7002,,,,,,B-30002,05/02/2024,750000,IDR,dikirim,,,,,,,,,,,
+15,customer_b_id,customer_b_orders,orders,3,,,,,,,,,,,,ID-7003,,,,,,B-30003,11-02-2024,0,IDR,dibatalkan,,,,,,,,,,,
+16,customer_b_id,customer_b_orders,orders,4,,,,,,,,,,,,ID-7004,,,,,,B-30004,2024-02-16,2200000,IDR,menunggu,,,,,,,,,,,
+17,customer_c_de,customer_c_customers,customers,1,,,,,,,,,,,,,,,,,,,,,,,DE-501,Anna Mueller,anna.mueller@example.de,+49 30 123456,15.01.2024,A,,,,,
+18,customer_c_de,customer_c_customers,customers,2,,,,,,,,,,,,,,,,,,,,,,,DE-502,Lukas Schneider,lukas.schneider@example.de,030-555-0199,22.01.2024,B,,,,,
+19,customer_c_de,customer_c_customers,customers,3,,,,,,,,,,,,,,,,,,,,,,,DE-503,Mia Fischer,mia.fischer@example.de,N/A,03.02.2024,C,,,,,
+20,customer_c_de,customer_c_customers,customers,4,,,,,,,,,,,,,,,,,,,,,,,DE-504,Leon Wagner,leon.wagner@example.de,+49 89 5550144,14.02.2024,A,,,,,
+21,customer_c_de,customer_c_orders,orders,1,,,,,,,,,,,,,,,,,,,,,,,DE-501,,,,,,C-80001,01.02.2024,"129,99",EUR,BEZ
+22,customer_c_de,customer_c_orders,orders,2,,,,,,,,,,,,,,,,,,,,,,,DE-502,,,,,,C-80002,05.02.2024,"74,50",EUR,VERS
+23,customer_c_de,customer_c_orders,orders,3,,,,,,,,,,,,,,,,,,,,,,,DE-503,,,,,,C-80003,11.02.2024,"0,00",EUR,STOR
+24,customer_c_de,customer_c_orders,orders,4,,,,,,,,,,,,,,,,,,,,,,,DE-504,,,,,,C-80004,16.02.2024,"210,20",EUR,OFF
