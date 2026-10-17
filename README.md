@@ -9,12 +9,6 @@ configuration and a data dictionary.
 connect to a database. Unsupported or uncertain transformations remain
 `manual_review`, and loading stays disabled.
 
-[Week 4 deliverables index](docs/week4-deliverables.md) links to the code,
-test records, and whole-agent limitations/future work. Reviewed customer outputs
-are attached on the [Notion deliverables page](https://app.notion.com/p/1aef2154d6118307a7e58130019067d8).
-Notion access follows that page's sharing permissions; generated local outputs
-and credentials remain excluded from Git.
-
 ## 1. Requirements
 
 - Python **3.12**, Git, and a terminal.
@@ -199,9 +193,8 @@ The safety check examines tracked/unignored candidate files and, with
 patterns. It reports locations, not secret values. It cannot detect every
 kind of personal or sensitive data: manually review files before committing.
 
-The live A/B/C results and the status-scope fix are documented in
-[the Week 4 test record](docs/week4-task3-test-record.md). A fixture-specific
-checker can recheck an original-example run without API calls:
+A fixture-specific checker can verify an original-example run's artifacts,
+field meanings, dates, statuses, and amounts without additional API calls:
 
 ```bash
 python scripts/check_end_to_end.py \
@@ -256,7 +249,7 @@ data/examples/week1/        Original fictional A/B/C teaching datasets
 data/generated/             Reproducible synthetic stress data (ignored)
 data/private/               Suggested location for real input data (ignored)
 outputs/                    Local generated artifacts and test evidence (ignored)
-docs/                       Contracts, prompts, learning notes, test records
+docs/                       Technical contracts, mapping format, runtime prompt
 .env.example                Blank credential template; safe to commit
 requirements.txt            Pinned core dependencies
 requirements-embeddings.txt Optional ML experiment dependencies
@@ -273,7 +266,7 @@ requirements-embeddings.txt Optional ML experiment dependencies
 | Connection or certificate error | Check network/proxy access to the API. Do not disable TLS verification. Completed local artifacts remain in the run folder. |
 | Output directory is not empty | Choose a new `--output-dir`; prior runs are preserved, not overwritten. |
 | Missing CSV or wrong customer | Check the source label/filename pair, or pass both explicit CSV paths. |
-| Missing schema from an old command | Use `--schema schemas/unified-schema.json`. Historical notes referring to `outputs/unified-schema.json` predate the portable default. |
+| Missing schema | Use `--schema schemas/unified-schema.json`, or supply another reviewed schema that exists locally. |
 | Failed step | Read `failed_step` and `errors` in `run_log.json`. Fix the cause and retry in a new folder. There is no automatic resume. |
 | `manual_review` / invalid-date warning | Inspect the rule/report. A safe deferral or warned null is expected for unsupported/invalid data; do not force a production value. |
 | Stale validation fingerprints | Rerun validation for the current CSV/mapping/schema before drafting ETL. |
@@ -293,8 +286,6 @@ of API access, logs, and downloadable artifacts.
 The next priorities are unseen-customer evaluation, reliability/scale, and
 additional approved transformations. Streamlit, database integration, and new
 data sources remain future work; a UI must not delay the CLI, tests, or docs.
-See the [whole-agent limitations and future-work note](docs/week4-task5-limitations-future-work.md)
-for current safeguards, core-deliverable evidence, and the project conclusion.
 
 ## Optional experiments and further documentation
 
@@ -310,11 +301,6 @@ ML dependencies and downloads model weights on first use.
 
 - [Mapping format](docs/week3-task1-mapping-format.md)
 - [Module contracts](docs/module-data-contracts.md)
-- [Data dictionary explanation](docs/week4-task1-data-dictionary.md)
-- [Controller explanation](docs/week4-task2-onboarding-agent.md)
-- [Clean-clone verification record](docs/week4-task4-repository-check.md)
-- [Known limitations, future work, and whole-agent conclusion](docs/week4-task5-limitations-future-work.md)
-- [Historical weekly commands](docs/legacy-weekly-commands.md) — some require earlier local artifacts
 
 Before publishing, run the safety check and inspect `git status`. Do not force-add
 ignored secrets, customer files, virtual environments, logs, or generated runs.

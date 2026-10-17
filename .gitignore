@@ -38,6 +38,16 @@ data/raw/
 !data/examples/week1/*.csv
 !data/customer_a_customers.csv
 
+# Manager-facing notes and submission snapshots stay local, not in the app repo.
+docs/week3-*.md
+!docs/week3-task1-mapping-format.md
+!docs/week3-task2-mapping-generator-prompt.md
+docs/week4-*.md
+docs/prompt-log.md
+docs/legacy-weekly-commands.md
+examples/results/
+scripts/package_week4_deliverables.py
+
 # Disposable debug/editor files
 *.log
 *.tmp
