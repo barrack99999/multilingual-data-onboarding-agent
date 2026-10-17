@@ -9,6 +9,12 @@ configuration and a data dictionary.
 connect to a database. Unsupported or uncertain transformations remain
 `manual_review`, and loading stays disabled.
 
+[Week 4 deliverables index](docs/week4-deliverables.md) links to the code,
+test records, and whole-agent limitations/future work. Reviewed customer outputs
+are attached on the [Notion deliverables page](https://app.notion.com/p/1aef2154d6118307a7e58130019067d8).
+Notion access follows that page's sharing permissions; generated local outputs
+and credentials remain excluded from Git.
+
 ## 1. Requirements
 
 - Python **3.12**, Git, and a terminal.
@@ -274,6 +280,22 @@ requirements-embeddings.txt Optional ML experiment dependencies
 | LLM mapping fails after retries | Keep the failed run evidence; inspect its source-specific rules and retry or review the mapping. Output quality is not guaranteed for unseen data. |
 | GitHub live test reports missing secret | Add `OPENAI_API_KEY` in repository Settings → Secrets and variables → Actions, then manually rerun. Local `.env` is intentionally not copied. |
 
+## 11. Known limitations and future work
+
+The whole agent is a human-reviewed draft generator, not a production ETL
+system. LLM answers can be wrong, complex names cannot be safely split by a
+simple rule, and fixed exchange rates are fictional test fixtures. Profiling
+currently holds the CSV in memory, while validation checks only the first N
+rows. `merge`, `prefix`, and `normalize_phone` remain manual-review operations.
+Real customer samples require permission, privacy controls, and careful handling
+of API access, logs, and downloadable artifacts.
+
+The next priorities are unseen-customer evaluation, reliability/scale, and
+additional approved transformations. Streamlit, database integration, and new
+data sources remain future work; a UI must not delay the CLI, tests, or docs.
+See the [whole-agent limitations and future-work note](docs/week4-task5-limitations-future-work.md)
+for current safeguards, core-deliverable evidence, and the project conclusion.
+
 ## Optional experiments and further documentation
 
 Generate six 75-row synthetic stress-test CSVs:
@@ -291,6 +313,7 @@ ML dependencies and downloads model weights on first use.
 - [Data dictionary explanation](docs/week4-task1-data-dictionary.md)
 - [Controller explanation](docs/week4-task2-onboarding-agent.md)
 - [Clean-clone verification record](docs/week4-task4-repository-check.md)
+- [Known limitations, future work, and whole-agent conclusion](docs/week4-task5-limitations-future-work.md)
 - [Historical weekly commands](docs/legacy-weekly-commands.md) — some require earlier local artifacts
 
 Before publishing, run the safety check and inspect `git status`. Do not force-add

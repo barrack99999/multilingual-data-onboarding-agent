@@ -87,7 +87,7 @@ From the project folder with the virtual environment active:
 python onboarding_agent.py \
   --source-system "Customer A" \
   --input-dir data/examples/week1 \
-  --schema outputs/unified-schema.json \
+  --schema schemas/unified-schema.json \
   --sample-size 100 \
   --output-dir outputs/end-to-end/customer_a/new_run
 ```

@@ -46,7 +46,7 @@ source .venv/bin/activate
 python onboarding_agent.py \
   --source-system "Customer A" \
   --input-dir data/examples/week1 \
-  --schema outputs/unified-schema.json \
+  --schema schemas/unified-schema.json \
   --output-dir outputs/customer_a_run_01
 ```
 
@@ -55,7 +55,7 @@ This uses API credits for two field analyses and two mapping generations
 compact profiles to FieldAnalyzer, not whole CSV files. The existing
 MappingGenerator also includes its existing observed-value checks.
 
-The default schema is `outputs/unified-schema.json` even if `--schema` is
+The default schema is `schemas/unified-schema.json` even if `--schema` is
 omitted. The controller copies the reviewed schema exactly into the run folder;
 it does not overwrite the original. Use `--recommend-schema` only when a new
 draft is wanted. A single-customer draft is not a replacement for a schema
@@ -113,9 +113,9 @@ silently treated as one stable input.
 python onboarding_agent.py \
   --source-system "Customer A" \
   --input-dir data/examples/week1 \
-  --schema outputs/unified-schema.json \
-  --analysis outputs/customer-a-field-analysis.json \
-  --mapping-dir outputs/mappings \
+  --schema schemas/unified-schema.json \
+  --analysis examples/field-analysis/customer_a.json \
+  --mapping-dir examples/mappings \
   --output-dir outputs/customer_a_reuse_01
 ```
 
@@ -137,7 +137,7 @@ python onboarding_agent.py \
   --input-dir data/maple \
   --customer-csv data/maple/clients_export.csv \
   --order-csv data/maple/transactions_export.csv \
-  --schema outputs/unified-schema.json \
+  --schema schemas/unified-schema.json \
   --output-dir outputs/maple_run_01
 ```
 
@@ -151,7 +151,11 @@ Optional `source_system` metadata supplies the correct name even for custom
 filenames. Missing concept coverage is recorded rather than filled with
 invented sources; structural/modeling policy checks still apply.
 
-## Verification performed
+## Verification performed at Task 2
+
+The results below are the historical Task 2 checks. Later fresh A/B/C runs are
+recorded in [Task 3](week4-task3-test-record.md), and the current whole-agent
+assessment is in [Task 5](week4-task5-limitations-future-work.md).
 
 The Customer A no-API integration check used the original Week 1 examples,
 the reviewed schema, and existing A analyses/mappings. All controller stages
